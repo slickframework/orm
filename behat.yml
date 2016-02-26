@@ -1,0 +1,9 @@
+# Behat configuration file
+default:
+  suites:
+    default:
+      contexts:
+        - FeatureContext
+        - Orm\OrmContext
+      paths:
+        - %paths.base%/features

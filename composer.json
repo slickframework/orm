@@ -1,0 +1,44 @@
+{
+  "name": "Slick/orm",
+  "description": "Slick Object-relational mapping package",
+  "minimum-stability": "dev",
+  "license": "MIT",
+  "version": "v1.2.0",
+  "keywords": [
+    "slick",
+    "ORM",
+    "Object-relational mapping"
+  ],
+  "authors": [
+    {
+      "name": "Filipe Silva",
+      "email": "silvam.filipe@gmail.com",
+      "role": "Developer"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Slick\\Orm\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Slick\\Tests\\Orm\\": "tests"
+    }
+  },
+  "require": {
+    "slick/common": "^1.1",
+    "slick/database": "^1.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.*",
+    "scrutinizer/ocular": "~1.1",
+    "behat/behat": "~3.0.4"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.2-dev",
+      "dev-develop": "1.3-dev"
+    }
+  }
+}
