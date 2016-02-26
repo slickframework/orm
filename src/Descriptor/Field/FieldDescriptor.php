@@ -90,6 +90,16 @@ class FieldDescriptor extends Base
      */
     public function getName()
     {
+        return $this->name;
+    }
+
+    /**
+     * Gets the field name
+     *
+     * @return string
+     */
+    public function getField()
+    {
         $value = $this->name;
         if (null != $this->field) {
             $value = $this->field;

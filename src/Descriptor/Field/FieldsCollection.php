@@ -30,7 +30,7 @@ class FieldsCollection extends AbstractCollection implements
      */
     public function add(FieldDescriptor $descriptor)
     {
-        $this->data[$descriptor->getName()] = $descriptor;
+        $this->data[$descriptor->getField()] = $descriptor;
         return $this;
     }
 

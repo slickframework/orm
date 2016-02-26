@@ -45,6 +45,11 @@ class EntityDescriptor implements EntityDescriptorInterface
     protected $fields;
 
     /**
+     * @var FieldDescriptor
+     */
+    protected $primaryKey;
+
+    /**
      * EntityDescriptor need an entity FQ class name.
      *
      * @param string $entity
@@ -71,7 +76,7 @@ class EntityDescriptor implements EntityDescriptorInterface
     /**
      * Returns entity fields
      *
-     * @return array
+     * @return FieldsCollection|FieldDescriptor[]
      */
     public function getFields()
     {
@@ -83,6 +88,24 @@ class EntityDescriptor implements EntityDescriptorInterface
             }
         }
         return $this->fields;
+    }
+
+    /**
+     * Returns the primary key field
+     *
+     * @return FieldDescriptor|null
+     */
+    public function getPrimaryKey()
+    {
+        if (null == $this->primaryKey) {
+            foreach ($this->getFields() as $field) {
+                if ($field->isPrimaryKey()) {
+                    $this->primaryKey = $field;
+                    break;
+                }
+            }
+        }
+        return $this->primaryKey;
     }
 
     /**

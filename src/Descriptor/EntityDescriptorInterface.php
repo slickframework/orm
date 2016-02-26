@@ -8,6 +8,8 @@
  */
 
 namespace Slick\Orm\Descriptor;
+use Slick\Orm\Descriptor\Field\FieldDescriptor;
+use Slick\Orm\Descriptor\Field\FieldsCollection;
 
 /**
  * ORM Entity Descriptor Interface
@@ -28,7 +30,14 @@ interface EntityDescriptorInterface
     /**
      * Returns entity fields
      *
-     * @return array
+     * @return FieldsCollection
      */
     public function getFields();
+
+    /**
+     * Returns the primary key field
+     *
+     * @return FieldDescriptor
+     */
+    public function getPrimaryKey();
 }
