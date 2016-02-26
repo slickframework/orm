@@ -9,9 +9,18 @@
 
 namespace Slick\Orm\Descriptor;
 
-
+use Slick\Common\Inspector;
 use Slick\Common\Utils\Text;
+use Slick\Orm\Annotations\Column;
+use Slick\Orm\Descriptor\Field\FieldDescriptor;
+use Slick\Orm\Descriptor\Field\FieldsCollection;
 
+/**
+ * Entity Descriptor
+ *
+ * @package Slick\Orm\Descriptor
+ * @author  Filipe Silva <silvam.filipe@gmail.com>
+ */
 class EntityDescriptor implements EntityDescriptorInterface
 {
 
@@ -26,6 +35,16 @@ class EntityDescriptor implements EntityDescriptorInterface
     protected $tableName;
 
     /**
+     * @var Inspector
+     */
+    protected $inspector;
+
+    /**
+     * @var FieldsCollection
+     */
+    protected $fields;
+
+    /**
      * EntityDescriptor need an entity FQ class name.
      *
      * @param string $entity
@@ -33,6 +52,7 @@ class EntityDescriptor implements EntityDescriptorInterface
     public function __construct($entity)
     {
         $this->entity = $entity;
+        $this->inspector = Inspector::forClass($entity);
     }
 
     /**
@@ -43,7 +63,7 @@ class EntityDescriptor implements EntityDescriptorInterface
     public function getTableName()
     {
         if (null == $this->tableName) {
-            $this->tableName = $this->parseTableName();
+            $this->tableName = $this->determineTableName();
         }
         return $this->tableName;
     }
@@ -55,17 +75,65 @@ class EntityDescriptor implements EntityDescriptorInterface
      */
     public function getFields()
     {
-        // TODO: Implement getFields() method.
+        if (null == $this->fields) {
+            $properties = $this->inspector->getClassProperties();
+            $this->fields = new FieldsCollection();
+            foreach ($properties as $property) {
+                $this->addDescriptor($property);
+            }
+        }
+        return $this->fields;
+    }
+
+    /**
+     * Determines the table name for current entity
+     *
+     * If there is an annotation @table present it will be used
+     * otherwise the name will be parsed by convention using the
+     * EntityDescriptor::parseTableName() method.
+     *
+     * @return string
+     */
+    private function determineTableName()
+    {
+        $annotations = $this->inspector->getClassAnnotations();
+        $name = self::parseTableName($this->entity);
+        if ($annotations->hasAnnotation('@table')) {
+            $name = $annotations->getAnnotation('@table')->getValue();
+        }
+        return $name;
+    }
+
+    /**
+     * Creates the descriptor if provided property has annotation @column
+     *
+     * @param $property
+     *
+     * @return self|$this|EntityDescriptor
+     */
+    private function addDescriptor($property)
+    {
+        $annotations = $this->inspector
+            ->getPropertyAnnotations($property);
+        if ($annotations->hasAnnotation('@column')) {
+            /** @var Column $annotation */
+            $annotation = $annotations->getAnnotation('@column');
+            $descriptor = new FieldDescriptor($annotation->getParameters());
+            $this->fields[] = $descriptor->setName($property);
+        }
+        return $this;
     }
 
     /**
      * Parses the table name from the class name
      *
+     * @param string $className
+     *
      * @return string
      */
-    private function parseTableName()
+    public static function parseTableName($className)
     {
-        $parts = explode('\\', $this->entity);
+        $parts = explode('\\', $className);
         $name = end($parts);
         $tableName = null;
 
