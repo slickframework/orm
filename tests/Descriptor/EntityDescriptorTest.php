@@ -11,6 +11,7 @@ namespace Slick\Tests\Orm\Descriptor;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use Slick\Orm\Descriptor\EntityDescriptor;
+use Slick\Orm\Descriptor\Field\FieldDescriptor;
 use Slick\Orm\Descriptor\Field\FieldsCollection;
 
 /**
@@ -81,5 +82,24 @@ class EntityDescriptorTest extends TestCase
         $expected = ['uid', 'name'];
         $data = array_keys($fields->asArray());
         $this->assertEquals($expected, $data);
+    }
+
+    public function testPrimaryKey()
+    {
+        $entity = Person::class;
+        $descriptor = new EntityDescriptor($entity);
+        $primaryKey = $descriptor->getPrimaryKey();
+        $this->assertInstanceOf(FieldDescriptor::class, $primaryKey);
+        return $primaryKey;
+    }
+
+    /**
+     * @param FieldDescriptor $primaryKey
+     * @depends  testPrimaryKey
+     */
+    public function testCorrectField($primaryKey)
+    {
+        $this->assertEquals('uid', $primaryKey->getField());
+        $this->assertEquals('id', $primaryKey->getName());
     }
 }
