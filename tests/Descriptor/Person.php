@@ -9,6 +9,7 @@
 
 namespace Slick\Tests\Orm\Descriptor;
 
+use Slick\Orm\Entity;
 use Slick\Orm\EntityInterface;
 
 /**
@@ -18,16 +19,19 @@ use Slick\Orm\EntityInterface;
  * @author  Filipe Silva
  *
  * @table users
+ * @adapter default
  */
-abstract class Person implements EntityInterface
+class Person extends Entity implements EntityInterface
 {
     /**
+     * @readwrite
      * @Slick\Orm\Annotations\Column type=integer, primaryKey, autoIncrement, field=uid
      * @var int
      */
     public $id;
 
     /**
+     * @readwrite
      * @Slick\Orm\Annotations\Column type=text, size=tiny
      * @var string
      */

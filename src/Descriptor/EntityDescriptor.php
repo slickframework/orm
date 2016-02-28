@@ -50,6 +50,11 @@ class EntityDescriptor implements EntityDescriptorInterface
     protected $primaryKey;
 
     /**
+     * @var string
+     */
+    protected $adapterAlias = '__undefined__';
+
+    /**
      * EntityDescriptor need an entity FQ class name.
      *
      * @param string $entity
@@ -168,5 +173,24 @@ class EntityDescriptor implements EntityDescriptorInterface
             $tableName .= ucfirst($word);
         }
         return lcfirst($tableName);
+    }
+
+    /**
+     * Returns the adapter alias name to use with this entity
+     *
+     * @return string
+     */
+    public function getAdapterAlias()
+    {
+        if ('__undefined__' == $this->adapterAlias) {
+            $this->adapterAlias = null;
+            $annotations = $this->inspector->getClassAnnotations();
+            if ($annotations->hasAnnotation('@adapter')) {
+                $this->adapterAlias = $annotations
+                    ->getAnnotation('@adapter')
+                    ->getValue();
+            }
+        }
+        return $this->adapterAlias;
     }
 }

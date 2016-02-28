@@ -9,7 +9,7 @@
 
 namespace Slick\Orm;
 
-use Slick\Common\BaseMethods;
+use Slick\Common\Base;
 
 /**
  * Entity
@@ -17,13 +17,8 @@ use Slick\Common\BaseMethods;
  * @package Slick\Orm
  * @readwrite
  */
-abstract class Entity implements EntityInterface
+abstract class Entity extends Base implements EntityInterface
 {
-
-    /**
-     * Helper trait for easy getter/setter
-     */
-    use BaseMethods;
 
     /**
      * Saves current entity state

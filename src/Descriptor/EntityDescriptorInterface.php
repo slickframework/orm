@@ -40,4 +40,11 @@ interface EntityDescriptorInterface
      * @return FieldDescriptor
      */
     public function getPrimaryKey();
+
+    /**
+     * Returns the adapter alias name to use with this entity
+     *
+     * @return string
+     */
+    public function getAdapterAlias();
 }

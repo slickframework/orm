@@ -10,6 +10,8 @@
 namespace Slick\Orm;
 
 use Slick\Database\Adapter\AdapterInterface;
+use Slick\Orm\Descriptor\EntityDescriptor;
+use Slick\Orm\Descriptor\EntityDescriptorRegistry;
 use Slick\Orm\Mapper\EntityMapper;
 use Slick\Orm\Mapper\MappersMap;
 
@@ -33,9 +35,9 @@ final class Orm
     private static $instance;
 
     /**
-     * @var AdapterInterface
+     * @var AdaptersMap
      */
-    private $defaultAdapter;
+    private $adapters;
 
     /**
      * Initialize Orm registry with empty lists
@@ -43,11 +45,12 @@ final class Orm
     private function __construct()
     {
         $this->mappers = new MappersMap();
+        $this->adapters = new AdaptersMap();
     }
 
     /**
      * Avoid clone on a singleton
-     * @ignoreCoverage
+     * @codeCoverageIgnore
      */
     private function __clone()
     {
@@ -106,7 +109,20 @@ final class Orm
      */
     public function setDefaultAdapter(AdapterInterface $adapter)
     {
-        $this->defaultAdapter = $adapter;
+        return $this->setAdapter('default', $adapter);
+    }
+
+    /**
+     * Sets an adapter mapped with alias name
+     *
+     * @param string $alias
+     * @param AdapterInterface $adapter
+     *
+     * @return $this|Orm|self
+     */
+    public function setAdapter($alias, AdapterInterface $adapter)
+    {
+        $this->adapters->set($alias, $adapter);
         return $this;
     }
 
@@ -120,8 +136,28 @@ final class Orm
     {
         $class = get_class($entity);
         $mapper = new EntityMapper();
-        $mapper->setAdapter($this->defaultAdapter);
+        $mapper->setAdapter(
+            $this->adapters->get(
+                $this->getAdapterAlias($entity)
+            )
+        );
         $this->mappers->set($class, $mapper);
         return $mapper;
+    }
+
+    /**
+     * Gets the adapter alias for current working entity
+     *
+     * @param EntityInterface $entity
+     *
+     * @return EntityDescriptor|string
+     */
+    private function getAdapterAlias(EntityInterface $entity)
+    {
+        $descriptor = EntityDescriptorRegistry::getInstance()
+            ->getDescriptorFor($entity);
+        return $descriptor->getAdapterAlias()
+            ? $descriptor->getAdapterAlias()
+            : 'default';
     }
 }

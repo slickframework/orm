@@ -89,8 +89,6 @@ class EntityMapper implements EntityMapperInterface
         return $this;
     }
 
-
-
     /**
      * Sets the adapter for this mapper
      *
@@ -114,11 +112,16 @@ class EntityMapper implements EntityMapperInterface
         return $this->adapter;
     }
 
+    /**
+     * Creates the insert/update query for current entity state
+     *
+     * @return Sql\Insert|Sql\Update
+     */
     protected function getUpdateQuery()
     {
-        $primaryKey = $this->descriptor->getPrimaryKey()->getName();
+        $primaryKey = $this->getDescriptor()->getPrimaryKey()->getName();
         $table = $this->getDescriptor()->getTableName();
-        $sql = Sql::createSql($this->adapter);
+        $sql = Sql::createSql($this->getAdapter());
         $query = (null === $this->entity->{$primaryKey})
             ? $sql->insert($table)
             : $this->setUpdateCriteria(
@@ -129,6 +132,15 @@ class EntityMapper implements EntityMapperInterface
         return $query;
     }
 
+    /**
+     * Adds the update criteria for an update query
+     *
+     * @param Sql\Update $query
+     * @param string $primaryKey
+     * @param string $table
+     *
+     * @return Sql\Update
+     */
     protected function setUpdateCriteria(
         Sql\Update $query, $primaryKey, $table
     ) {
@@ -148,7 +160,7 @@ class EntityMapper implements EntityMapperInterface
         $fields = $this->getDescriptor()->getFields();
         /** @var FieldDescriptor $field */
         foreach ($fields as $field) {
-            $data[$field->getField()] = $this->entity->${$field->getName()};
+            $data[$field->getField()] = $this->entity->{$field->getName()};
         }
         return $data;
     }
