@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c1cd0c34ef7c9446dfed8783e6018a88",
-    "content-hash": "d4c7b3b16b08461b6e8012fa0639fdf3",
+    "hash": "b1b60694bec3dc1358a7f8cf04a94b46",
+    "content-hash": "56186930b15cc7489dd89ccbaf9196a8",
     "packages": [
         {
             "name": "monolog/monolog",
@@ -241,12 +241,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/slickframework/database.git",
-                "reference": "cbba960a79455cf1b296a6938b574882b240ca65"
+                "reference": "6e90d127dfb6b8ecc0d1a3bbf6c83f07dd76c399"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slickframework/database/zipball/cbba960a79455cf1b296a6938b574882b240ca65",
-                "reference": "cbba960a79455cf1b296a6938b574882b240ca65",
+                "url": "https://api.github.com/repos/slickframework/database/zipball/6e90d127dfb6b8ecc0d1a3bbf6c83f07dd76c399",
+                "reference": "6e90d127dfb6b8ecc0d1a3bbf6c83f07dd76c399",
                 "shasum": ""
             },
             "require": {
@@ -290,7 +290,7 @@
                 "slick",
                 "sql"
             ],
-            "time": "2015-12-01 01:15:36"
+            "time": "2016-02-28 02:40:28"
         }
     ],
     "packages-dev": [
@@ -480,12 +480,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/annotations.git",
-                "reference": "f25c8aab83e0c3e976fd7d19875f198ccf2f7535"
+                "reference": "07a9af2d4de5f9ef0bf2d9ae94421e5fc50d7859"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/annotations/zipball/f25c8aab83e0c3e976fd7d19875f198ccf2f7535",
-                "reference": "f25c8aab83e0c3e976fd7d19875f198ccf2f7535",
+                "url": "https://api.github.com/repos/doctrine/annotations/zipball/07a9af2d4de5f9ef0bf2d9ae94421e5fc50d7859",
+                "reference": "07a9af2d4de5f9ef0bf2d9ae94421e5fc50d7859",
                 "shasum": ""
             },
             "require": {
@@ -540,7 +540,7 @@
                 "docblock",
                 "parser"
             ],
-            "time": "2015-08-31 12:32:49"
+            "time": "2016-02-26 09:54:41"
         },
         {
             "name": "doctrine/instantiator",
@@ -1639,12 +1639,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/environment.git",
-                "reference": "6e7133793a8e5a5714a551a8324337374be209df"
+                "reference": "dc7a29032cf72b54f36dac15a1ca5b3a1b6029bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/6e7133793a8e5a5714a551a8324337374be209df",
-                "reference": "6e7133793a8e5a5714a551a8324337374be209df",
+                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/dc7a29032cf72b54f36dac15a1ca5b3a1b6029bf",
+                "reference": "dc7a29032cf72b54f36dac15a1ca5b3a1b6029bf",
                 "shasum": ""
             },
             "require": {
@@ -1681,7 +1681,7 @@
                 "environment",
                 "hhvm"
             ],
-            "time": "2015-12-02 08:37:27"
+            "time": "2016-02-26 18:40:46"
         },
         {
             "name": "sebastian/exporter",
@@ -2061,12 +2061,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dependency-injection.git",
-                "reference": "4ce292a3545b98d9a2d93a61708048dd94ad1cad"
+                "reference": "3058f2cf2efb9a3e14ac520de6d7f51433a93a84"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/4ce292a3545b98d9a2d93a61708048dd94ad1cad",
-                "reference": "4ce292a3545b98d9a2d93a61708048dd94ad1cad",
+                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/3058f2cf2efb9a3e14ac520de6d7f51433a93a84",
+                "reference": "3058f2cf2efb9a3e14ac520de6d7f51433a93a84",
                 "shasum": ""
             },
             "require": {
@@ -2115,7 +2115,7 @@
             ],
             "description": "Symfony DependencyInjection Component",
             "homepage": "https://symfony.com",
-            "time": "2016-02-24 18:55:13"
+            "time": "2016-02-26 06:30:51"
         },
         {
             "name": "symfony/event-dispatcher",
