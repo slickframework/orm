@@ -193,4 +193,14 @@ class EntityDescriptor implements EntityDescriptorInterface
         }
         return $this->adapterAlias;
     }
+
+    /**
+     * Gets entity class name
+     *
+     * @return string
+     */
+    public function className()
+    {
+        return $this->entity;
+    }
 }

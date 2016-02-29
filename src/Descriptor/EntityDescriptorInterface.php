@@ -47,4 +47,11 @@ interface EntityDescriptorInterface
      * @return string
      */
     public function getAdapterAlias();
+
+    /**
+     * Gets entity class name
+     *
+     * @return string
+     */
+    public function className();
 }
