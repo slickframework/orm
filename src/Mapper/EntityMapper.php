@@ -218,4 +218,17 @@ class EntityMapper implements EntityMapperInterface
         }
         return new EntityCollection($data);
     }
+
+    /**
+     * Sets entity class name
+     *
+     * @param $entityClass
+     *
+     * @return self|$this|EntityMapper
+     */
+    public function setEntity($entityClass)
+    {
+        $this->entity = $entityClass;
+        return $this;
+    }
 }

@@ -18,7 +18,9 @@ use Slick\Database\Adapter;
 use Slick\Database\Adapter\SqliteAdapter;
 use Slick\Database\Sql;
 use Slick\Orm\Entity;
+use Slick\Orm\EntityInterface;
 use Slick\Orm\Orm;
+use Slick\Orm\Repository\EntityRepository;
 
 /**
  * Step definitions for slick/orm package
@@ -49,6 +51,17 @@ class OrmContext extends \AbstractContext implements
      * @var Person|Entity
      */
     protected $entity;
+
+    /**
+     * @var EntityRepository
+     */
+    protected $repository;
+
+    /**
+     * @var EntityInterface
+     */
+    protected $lastEntity;
+
 
     /**
      * Create a person with provided name
@@ -118,5 +131,66 @@ class OrmContext extends \AbstractContext implements
             $this->orm = Orm::getInstance();
         }
         return $this->orm;
+    }
+
+    /**
+     * Create repository for a provided class name
+     *
+     * @Given /^I get a repository for "([^"]*)"$/
+     *
+     * @param string $className
+     */
+    public function iGetARepositoryForDomainPerson($className)
+    {
+        $this->repository = $this->getOrm()
+            ->getRepositoryFor($className);
+    }
+
+    /**
+     * Gets the entity with
+     *
+     * @When /^I get entity with id "([^"]*)"$/
+     *
+     * @param string $entityId
+     */
+    public function iGetEntityWithId($entityId)
+    {
+        $this->lastEntity = $this->entity;
+        $this->entity = $this->repository->get($entityId);
+    }
+
+    /**
+     * Check if entity value matched
+     *
+     * @Then /^I get entity with "([^"]*)" equals "([^"]*)"$/
+     *
+     * @param string $field
+     * @param string $value
+     */
+    public function iGetEntityWithEquals($field, $value)
+    {
+        Assert::assertEquals($value, $this->entity->{$field});
+    }
+
+    /**
+     * Get same entity again
+     *
+     * @When /^I get entity with id "([^"]*)" again$/
+     *
+     * @param $entityId
+     */
+    public function iGetEntityWithIdAgain($entityId)
+    {
+        $this->iGetEntityWithId($entityId);
+    }
+
+    /**
+     * Check that the 2 last entities are the same
+     *
+     * @Then /^entities should be the same$/
+     */
+    public function entityShouldBeTheSame()
+    {
+        Assert::assertSame($this->lastEntity, $this->entity);
     }
 }

@@ -47,4 +47,13 @@ interface EntityMapperInterface extends AdapterAwareInterface
      */
     public function createFrom($data);
 
+    /**
+     * Sets entity class name
+     *
+     * @param $entityClass
+     *
+     * @return self|$this|EntityMapperInterface
+     */
+    public function setEntity($entityClass);
+
 }

@@ -78,10 +78,10 @@ final class Orm
      * If mapper does not exists it will be created and stored in the
      * mapper map.
      *
-     * @param EntityInterface $entity
+     * @param String $entity
      * @return EntityMapper
      */
-    public static function getMapper(EntityInterface $entity)
+    public static function getMapper($entity)
     {
         return self::getInstance()->getMapperFor($entity);
     }
@@ -183,7 +183,8 @@ final class Orm
             $this->adapters->get(
                 $this->getAdapterAlias($entity)
             )
-        );
+        )
+            ->setEntity($entity);
         $this->mappers->set($entity, $mapper);
         return $mapper;
     }

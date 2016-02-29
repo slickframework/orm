@@ -35,7 +35,7 @@ class EntityRepository extends AbstractRepository implements
     {
         $entity = $this->getIdentityMap()->get($entityId, false);
         if ($entity === false) {
-            $entity = $this->load($entity);
+            $entity = $this->load($entityId);
         }
         return $entity;
     }

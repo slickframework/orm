@@ -143,9 +143,9 @@ class EntityDescriptor implements EntityDescriptorInterface
     {
         $annotations = $this->inspector
             ->getPropertyAnnotations($property);
-        if ($annotations->hasAnnotation('@column')) {
+        if ($annotations->hasAnnotation('column')) {
             /** @var Column $annotation */
-            $annotation = $annotations->getAnnotation('@column');
+            $annotation = $annotations->getAnnotation('column');
             $descriptor = new FieldDescriptor($annotation->getParameters());
             $this->fields[] = $descriptor->setName($property);
         }
