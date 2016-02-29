@@ -10,10 +10,12 @@
 namespace Slick\Orm\Mapper;
 
 use Slick\Database\Adapter\AdapterInterface;
+use Slick\Database\RecordList;
 use Slick\Database\Sql;
 use Slick\Orm\Descriptor\EntityDescriptorInterface;
 use Slick\Orm\Descriptor\EntityDescriptorRegistry;
 use Slick\Orm\Descriptor\Field\FieldDescriptor;
+use Slick\Orm\Entity\EntityCollection;
 use Slick\Orm\EntityInterface;
 use Slick\Orm\EntityMapperInterface;
 
@@ -70,7 +72,7 @@ class EntityMapper implements EntityMapperInterface
         if (null == $this->descriptor) {
             $this->setDescriptor(
                 EntityDescriptorRegistry::getInstance()
-                    ->getDescriptorFor($this->entity)
+                    ->getDescriptorFor(get_class($this->entity))
             );
         }
         return $this->descriptor;
@@ -163,5 +165,57 @@ class EntityMapper implements EntityMapperInterface
             $data[$field->getField()] = $this->entity->{$field->getName()};
         }
         return $data;
+    }
+
+    /**
+     * Creates an entity object from provided data
+     *
+     * Data can be an array with single row fields or a RecordList from
+     * a query.
+     *
+     * @param array|RecordList $data
+     *
+     * @return EntityInterface|EntityMapperInterface[]|EntityCollection
+     */
+    public function createFrom($data)
+    {
+        if ($data instanceof RecordList) {
+            return $this->createMultiple($data);
+        }
+        return $this->createSingle($data);
+    }
+
+    /**
+     * Creates an entity for provided row array
+     *
+     * @param array $source
+     * @return EntityInterface
+     */
+    protected function createSingle(array $source)
+    {
+        $data = [];
+        /** @var FieldDescriptor $field */
+        foreach ($this->getDescriptor()->getFields() as $field) {
+            if (array_key_exists($field->getField(), $source)) {
+                $data[$field->getName()] = $source[$field->getField()];
+            }
+        }
+        $class = $this->getDescriptor()->className();
+        return new $class($data);
+    }
+
+    /**
+     * Creates an entity collection for provided record list
+     *
+     * @param RecordList $source
+     * @return EntityCollection
+     */
+    protected function createMultiple(RecordList $source)
+    {
+        $data = [];
+        foreach ($source as $item) {
+            $data[] = $this->createSingle($item);
+        }
+        return new EntityCollection($data);
     }
 }

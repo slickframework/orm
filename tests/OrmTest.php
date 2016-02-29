@@ -53,7 +53,7 @@ class OrmTest extends TestCase
     public function getMapperForEntity()
     {
         $entity = new Person();
-        $mapper = Orm::mapperFor($entity);
+        $mapper = Orm::getMapper($entity);
         $this->assertInstanceOf(EntityMapperInterface::class, $mapper);
         return $mapper;
     }
@@ -66,7 +66,7 @@ class OrmTest extends TestCase
     public function reuseTheMapper($firstMapper)
     {
         $entity = new Person();
-        $mapper = Orm::mapperFor($entity);
+        $mapper = Orm::getMapper($entity);
         $this->assertSame($mapper, $firstMapper);
     }
 }

@@ -8,8 +8,10 @@
  */
 
 namespace Slick\Orm;
+
 use Slick\Database\Adapter\AdapterAwareInterface;
-use Slick\Database\Adapter\AdapterInterface;
+use Slick\Database\RecordList;
+use Slick\Orm\Entity\EntityCollection;
 
 /**
  * Class EntityMapperInterface
@@ -32,5 +34,17 @@ interface EntityMapperInterface extends AdapterAwareInterface
      * @return self|$this|EntityMapperInterface
      */
     public function save(EntityInterface $entity, array $data = []);
+
+    /**
+     * Creates an entity object from provided data
+     *
+     * Data can be an array with single row fields or a RecordList from
+     * a query.
+     *
+     * @param array|RecordList $data
+     *
+     * @return EntityInterface|EntityMapperInterface[]|EntityCollection
+     */
+    public function createFrom($data);
 
 }

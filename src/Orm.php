@@ -12,8 +12,10 @@ namespace Slick\Orm;
 use Slick\Database\Adapter\AdapterInterface;
 use Slick\Orm\Descriptor\EntityDescriptor;
 use Slick\Orm\Descriptor\EntityDescriptorRegistry;
+use Slick\Orm\Exception\InvalidArgumentException;
 use Slick\Orm\Mapper\EntityMapper;
 use Slick\Orm\Mapper\MappersMap;
+use Slick\Orm\Repository\EntityRepository;
 
 /**
  * Orm registry
@@ -79,9 +81,52 @@ final class Orm
      * @param EntityInterface $entity
      * @return EntityMapper
      */
-    public static function mapperFor(EntityInterface $entity)
+    public static function getMapper(EntityInterface $entity)
     {
         return self::getInstance()->getMapperFor($entity);
+    }
+
+    /**
+     * Gets repository for provided entity class name
+     *
+     * @param string $entityClass FQ entity class name
+     *
+     * @return EntityRepository
+     *
+     * @throws InvalidArgumentException If provide class name is not
+     *   from a class that implements the EntityInterface interface.
+     */
+    public static function getRepository($entityClass)
+    {
+        return self::getInstance()->getRepositoryFor($entityClass);
+    }
+
+    /**
+     * Gets repository for provided entity class name
+     *
+     * @param string $entityClass FQ entity class name
+     *
+     * @return EntityRepository
+     *
+     * @throws InvalidArgumentException If provide class name is not
+     *   from a class that implements the EntityInterface interface.
+     */
+    public function getRepositoryFor($entityClass)
+    {
+        if (!is_subclass_of($entityClass, EntityInterface::class)) {
+            throw new InvalidArgumentException(
+                'Cannot create ORM repository for a class that does not '.
+                'implement EntityInterface.'
+            );
+        }
+        $repository = new EntityRepository();
+        $repository->setAdapter(
+            $this->adapters->get($this->getAdapterAlias($entityClass))
+        )
+            ->setEntityMapper($this->getMapperFor($entityClass))
+            ->setEntityDescriptor(EntityDescriptorRegistry::getInstance()
+            ->getDescriptorFor($entityClass));
+        return $repository;
     }
 
     /**
@@ -90,14 +135,13 @@ final class Orm
      * If mapper does not exists it will be created and stored in the
      * mapper map.
      *
-     * @param EntityInterface $entity
+     * @param string $entity
      * @return EntityMapper
      */
-    public function getMapperFor(EntityInterface $entity)
+    public function getMapperFor($entity)
     {
-        $class = get_class($entity);
-        return  $this->mappers->containsKey($class)
-            ? $this->mappers->get($class)
+        return  $this->mappers->containsKey($entity)
+            ? $this->mappers->get($entity)
             : $this->createMapper($entity);
     }
 
@@ -129,30 +173,29 @@ final class Orm
     /**
      * Creates entity map for provided entity
      *
-     * @param EntityInterface $entity
+     * @param string $entity
      * @return EntityMapper
      */
-    private function createMapper(EntityInterface $entity)
+    private function createMapper($entity)
     {
-        $class = get_class($entity);
         $mapper = new EntityMapper();
         $mapper->setAdapter(
             $this->adapters->get(
                 $this->getAdapterAlias($entity)
             )
         );
-        $this->mappers->set($class, $mapper);
+        $this->mappers->set($entity, $mapper);
         return $mapper;
     }
 
     /**
      * Gets the adapter alias for current working entity
      *
-     * @param EntityInterface $entity
+     * @param string $entity
      *
      * @return EntityDescriptor|string
      */
-    private function getAdapterAlias(EntityInterface $entity)
+    private function getAdapterAlias($entity)
     {
         $descriptor = EntityDescriptorRegistry::getInstance()
             ->getDescriptorFor($entity);

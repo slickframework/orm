@@ -42,6 +42,6 @@ abstract class Entity extends Base implements EntityInterface
      */
     public function getMapper()
     {
-        return Orm::mapperFor($this);
+        return Orm::getMapper($this);
     }
 }

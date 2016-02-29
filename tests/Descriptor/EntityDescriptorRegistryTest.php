@@ -55,7 +55,7 @@ class EntityDescriptorRegistryTest extends TestCase
     protected function getEntity()
     {
         if (null == $this->entity) {
-            $this->entity = $this->getMock(EntityInterface::class);
+            $this->entity = Person::class;
         }
         return $this->entity;
     }

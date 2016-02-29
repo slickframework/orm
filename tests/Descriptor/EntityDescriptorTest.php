@@ -102,4 +102,11 @@ class EntityDescriptorTest extends TestCase
         $this->assertEquals('uid', $primaryKey->getField());
         $this->assertEquals('id', $primaryKey->getName());
     }
+
+    public function testClassName()
+    {
+        $entity = Person::class;
+        $descriptor = new EntityDescriptor($entity);
+        $this->assertEquals($entity, $descriptor->className());
+    }
 }

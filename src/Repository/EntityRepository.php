@@ -11,6 +11,7 @@ namespace Slick\Orm\Repository;
 
 use Slick\Database\Sql;
 use Slick\Orm\EntityInterface;
+use Slick\Orm\EntityMapperInterface;
 use Slick\Orm\RepositoryInterface;
 
 /**
@@ -22,10 +23,6 @@ use Slick\Orm\RepositoryInterface;
 class EntityRepository extends AbstractRepository implements
     RepositoryInterface
 {
-    /**
-     * @var IdentityMapInterface
-     */
-    protected $identityMap;
 
     /**
      * Gets an entity by its id
@@ -44,31 +41,6 @@ class EntityRepository extends AbstractRepository implements
     }
 
     /**
-     * Sets identity map for this repository
-     *
-     * @param IdentityMapInterface $map
-     * @return $this|self|EntityRepository
-     */
-    public function setIdentityMap(IdentityMapInterface $map)
-    {
-        $this->identityMap = $map;
-        return $this;
-    }
-
-    /**
-     * Gets identity map for this repository
-     *
-     * @return IdentityMapInterface
-     */
-    protected function getIdentityMap()
-    {
-        if (null == $this->identityMap) {
-            $this->setIdentityMap(new IdentityMap());
-        }
-        return $this->identityMap;
-    }
-
-    /**
      * Loads entity from database
      *
      * @param $entityId
@@ -81,14 +53,20 @@ class EntityRepository extends AbstractRepository implements
         $primaryKey = $this->getEntityDescriptor()
             ->getPrimaryKey()
             ->getField();
+
         $data = Sql::createSql($this->getAdapter())
             ->select($this->getEntityDescriptor()->getTableName())
-            ->where(["{$table}.{$primaryKey} = ?" => $entityId])
+            ->where(
+                [
+                    "{$table}.{$primaryKey} = :id" => [
+                        ':id' => $entityId
+                    ]
+                ]
+            )
             ->first();
         $entity = null;
         if ($data) {
-            $class = $this->getEntityDescriptor()->className();
-            $entity = new $class($data);
+            $entity = $this->getEntityMapper()->createFrom($data);
             $this->getIdentityMap()->set($entity);
         }
         return $entity;

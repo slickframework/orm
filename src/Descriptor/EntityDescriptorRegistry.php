@@ -9,8 +9,6 @@
 
 namespace Slick\Orm\Descriptor;
 
-use Slick\Orm\EntityInterface;
-
 /**
  * Entity Descriptor Registry
  *
@@ -63,16 +61,15 @@ final class EntityDescriptorRegistry
     /**
      * Returns the descriptor for provided class name
      *
-     * @param EntityInterface $entity
+     * @param string $entity
      *
      * @return EntityDescriptor
      */
-    public function getDescriptorFor(EntityInterface $entity)
+    public function getDescriptorFor($entity)
     {
-        $key = get_class($entity);
-        return $this->descriptors->containsKey($key)
-            ? $this->descriptors->get($key)
-            : $this->createDescriptor($key);
+        return $this->descriptors->containsKey($entity)
+            ? $this->descriptors->get($entity)
+            : $this->createDescriptor($entity);
     }
 
     /**

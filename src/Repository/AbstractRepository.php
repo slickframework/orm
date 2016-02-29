@@ -11,6 +11,7 @@ namespace Slick\Orm\Repository;
 
 use Slick\Database\Adapter\AdapterInterface;
 use Slick\Orm\Descriptor\EntityDescriptorInterface;
+use Slick\Orm\EntityMapperInterface;
 
 /**
  * Abstract entity Repository
@@ -30,6 +31,16 @@ abstract class AbstractRepository
      * @var EntityDescriptorInterface
      */
     protected $entityDescriptor;
+
+    /**
+     * @var EntityMapperInterface
+     */
+    protected $entityMapper;
+
+    /**
+     * @var IdentityMapInterface
+     */
+    protected $identityMap;
 
     /**
      * Sets the adapter for this statement
@@ -74,6 +85,49 @@ abstract class AbstractRepository
     public function getEntityDescriptor()
     {
         return $this->entityDescriptor;
+    }
+
+    /**
+     * @return EntityMapperInterface
+     */
+    public function getEntityMapper()
+    {
+        return $this->entityMapper;
+    }
+
+    /**
+     * @param $entityMapper
+     * @return $this
+     */
+    public function setEntityMapper($entityMapper)
+    {
+        $this->entityMapper = $entityMapper;
+        return $this;
+    }
+
+    /**
+     * Sets identity map for this repository
+     *
+     * @param IdentityMapInterface $map
+     * @return $this|self|EntityRepository
+     */
+    public function setIdentityMap(IdentityMapInterface $map)
+    {
+        $this->identityMap = $map;
+        return $this;
+    }
+
+    /**
+     * Gets identity map for this repository
+     *
+     * @return IdentityMapInterface
+     */
+    protected function getIdentityMap()
+    {
+        if (null == $this->identityMap) {
+            $this->setIdentityMap(new IdentityMap());
+        }
+        return $this->identityMap;
     }
 
 }
