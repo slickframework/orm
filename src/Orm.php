@@ -16,6 +16,7 @@ use Slick\Orm\Exception\InvalidArgumentException;
 use Slick\Orm\Mapper\EntityMapper;
 use Slick\Orm\Mapper\MappersMap;
 use Slick\Orm\Repository\EntityRepository;
+use Slick\Orm\Repository\RepositoryMap;
 
 /**
  * Orm registry
@@ -42,12 +43,18 @@ final class Orm
     private $adapters;
 
     /**
+     * @var RepositoryMap
+     */
+    private $repositories;
+
+    /**
      * Initialize Orm registry with empty lists
      */
     private function __construct()
     {
         $this->mappers = new MappersMap();
         $this->adapters = new AdaptersMap();
+        $this->repositories = new RepositoryMap();
     }
 
     /**
@@ -119,13 +126,28 @@ final class Orm
                 'implement EntityInterface.'
             );
         }
+
+        return $this->repositories->containsKey($entityClass)
+            ? $this->repositories->get($entityClass)
+            : $this->createRepository($entityClass);
+    }
+
+    /**
+     * Creates a repository for provided entity class name
+     *
+     * @param string $entityClass
+     * @return EntityRepository
+     */
+    private function createRepository($entityClass)
+    {
         $repository = new EntityRepository();
         $repository->setAdapter(
             $this->adapters->get($this->getAdapterAlias($entityClass))
         )
             ->setEntityMapper($this->getMapperFor($entityClass))
             ->setEntityDescriptor(EntityDescriptorRegistry::getInstance()
-            ->getDescriptorFor($entityClass));
+                ->getDescriptorFor($entityClass));
+        $this->repositories->set($entityClass, $repository);
         return $repository;
     }
 

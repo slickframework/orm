@@ -69,4 +69,27 @@ class OrmTest extends TestCase
         $mapper = Orm::getMapper($entity);
         $this->assertSame($mapper, $firstMapper);
     }
+
+    /**
+     * Should reuse the repository for the same class name.
+     * @test
+     */
+    public function getRepository()
+    {
+        $repository = Orm::getRepository(Person::class);
+        $this->assertSame(
+            $repository,
+            $this->orm->getRepositoryFor(Person::class)
+        );
+    }
+
+    /**
+     * @test
+     * @expectedException \Slick\Orm\Exception\InvalidArgumentException
+     */
+    public function ormCreatesRepositoriesOnlyForEntities()
+    {
+        Orm::getRepository(\stdClass::class);
+    }
+
 }
