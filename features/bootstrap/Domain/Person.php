@@ -11,6 +11,7 @@ namespace Domain;
 
 use Slick\Orm\Entity;
 use Slick\Orm\Annotations\Column;
+use Slick\Orm\EntityInterface;
 
 /**
  * Class Person
@@ -46,5 +47,18 @@ class Person extends Entity
     public function getId()
     {
         return $this->uid;
+    }
+
+    /**
+     * Sets entity ID
+     *
+     * @param mixed $entityId Primary key or a UUID
+     *
+     * @return self|$this|EntityInterface
+     */
+    public function setId($entityId)
+    {
+       $this->uid = $entityId;
+        return $this;
     }
 }

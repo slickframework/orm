@@ -18,7 +18,6 @@ use Slick\Database\Sql\Update;
 use Slick\Orm\Descriptor\EntityDescriptorRegistry;
 use Slick\Orm\Entity\EntityCollection;
 use Slick\Orm\Mapper\EntityMapper;
-use Slick\Orm\Orm;
 use Slick\Tests\Orm\Descriptor\Person;
 
 /**
@@ -84,8 +83,12 @@ class EntityMapperTest extends TestCase
                 $this->isType('array')
             )
             ->willReturn(1);
+        $adapter->expects($this->once())
+            ->method('getLastInsertId')
+            ->willReturn(2);
         $this->mapper->setAdapter($adapter);
         $this->assertSame($this->mapper, $this->mapper->save($mike));
+        $this->assertEquals(2, $mike->getId());
     }
 
     /**

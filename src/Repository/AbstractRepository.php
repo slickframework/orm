@@ -122,7 +122,7 @@ abstract class AbstractRepository
      *
      * @return IdentityMapInterface
      */
-    protected function getIdentityMap()
+    public function getIdentityMap()
     {
         if (null == $this->identityMap) {
             $this->setIdentityMap(new IdentityMap());

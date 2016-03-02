@@ -60,13 +60,13 @@ class IdentityMap implements IdentityMapInterface
     /**
      * Remove an entity from identity map
      *
-     * @param mixed $entityId
+     * @param EntityInterface $entity
      *
      * @return self|$this|IdentityMapInterface
      */
-    public function remove($entityId)
+    public function remove($entity)
     {
-        $this->getCache()->erase($entityId);
+        $this->getCache()->erase($entity->getId());
         return $this;
     }
 

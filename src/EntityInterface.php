@@ -28,6 +28,15 @@ interface EntityInterface
     public function getId();
 
     /**
+     * Sets entity ID
+     *
+     * @param mixed $entityId Primary key or a UUID
+     *
+     * @return self|$this|EntityInterface
+     */
+    public function setId($entityId);
+
+    /**
      * Saves current entity state
      *
      * Optionally saves only the partial data if $data argument is passed. If

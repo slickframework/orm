@@ -61,7 +61,9 @@ class EntityDescriptor implements EntityDescriptorInterface
      */
     public function __construct($entity)
     {
-        $this->entity = $entity;
+        $this->entity = is_object($entity)
+            ? get_class($entity)
+            : $entity;
         $this->inspector = Inspector::forClass($entity);
     }
 

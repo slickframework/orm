@@ -18,6 +18,7 @@ use Slick\Orm\Descriptor\Field\FieldDescriptor;
 use Slick\Orm\Entity\EntityCollection;
 use Slick\Orm\EntityInterface;
 use Slick\Orm\EntityMapperInterface;
+use Slick\Orm\Orm;
 
 /**
  * Generic Entity Mapper
@@ -59,6 +60,11 @@ class EntityMapper implements EntityMapperInterface
         $query = $this->getUpdateQuery();
         $query->set($this->getData())
             ->execute();
+        $lastId = $query->getAdapter()->getLastInsertId();
+        if ($lastId) {
+            $entity->setId($lastId);
+        }
+        $this->registerEntity($entity);
         return $this;
     }
 
@@ -70,9 +76,12 @@ class EntityMapper implements EntityMapperInterface
     public function getDescriptor()
     {
         if (null == $this->descriptor) {
+            $class = is_object($this->entity)
+                ? get_class($this->entity)
+                : $this->entity;
             $this->setDescriptor(
                 EntityDescriptorRegistry::getInstance()
-                    ->getDescriptorFor(get_class($this->entity))
+                    ->getDescriptorFor($class)
             );
         }
         return $this->descriptor;
@@ -229,6 +238,23 @@ class EntityMapper implements EntityMapperInterface
     public function setEntity($entityClass)
     {
         $this->entity = $entityClass;
+        return $this;
+    }
+
+    /**
+     * Sets the entity in the identity map of its repository.
+     *
+     * This avoids a select when one client creates an entity and
+     * other client gets it from the repository.
+     *
+     * @param EntityInterface $entity
+     * @return $this
+     */
+    protected function registerEntity(EntityInterface $entity)
+    {
+        Orm::getRepository(get_class($entity))
+            ->getIdentityMap()
+            ->set($entity);
         return $this;
     }
 }

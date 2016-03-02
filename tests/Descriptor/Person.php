@@ -46,4 +46,17 @@ class Person extends Entity implements EntityInterface
     {
         return $this->id;
     }
+
+    /**
+     * Sets entity ID
+     *
+     * @param mixed $entityId Primary key or a UUID
+     *
+     * @return self|$this|EntityInterface
+     */
+    public function setId($entityId)
+    {
+        $this->id = $entityId;
+        return $this;
+    }
 }
