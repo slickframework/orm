@@ -47,4 +47,11 @@ interface EntityInterface
      * @return mixed
      */
     public function save(array $data = []);
+
+    /**
+     * Deletes current entity from its storage
+     *
+     * @return self|$this|EntityInterface
+     */
+    public function delete();
 }

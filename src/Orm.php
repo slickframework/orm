@@ -206,7 +206,7 @@ final class Orm
                 $this->getAdapterAlias($entity)
             )
         )
-            ->setEntity($entity);
+            ->setEntityClassName($entity);
         $this->mappers->set($entity, $mapper);
         return $mapper;
     }

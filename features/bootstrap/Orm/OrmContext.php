@@ -103,6 +103,24 @@ class OrmContext extends \AbstractContext implements
     }
 
     /**
+     * Run query where field equals provided pattern and check its empty
+     *
+     * @Then /^I should not see in database "([^"]*)" table a row where "([^"]*)" equals "([^"]*)"$/
+     *
+     * @param string $table
+     * @param string $field
+     * @param string $pattern
+     */
+    public function iShouldNotSeeInDatabaseTableFieldEquals($table, $field, $pattern)
+    {
+        $found = Sql::createSql($this->getAdapter())
+            ->select($table)
+            ->where(["{$table}.{$field} = ?" => $pattern])
+            ->count();
+        Assert::assertTrue($found == 0);
+    }
+
+    /**
      * @return SqliteAdapter
      */
     protected function getAdapter()
@@ -192,5 +210,21 @@ class OrmContext extends \AbstractContext implements
     public function entityShouldBeTheSame()
     {
         Assert::assertSame($this->lastEntity, $this->entity);
+    }
+
+    /**
+     * @Given /^entity ID should be assigned as an integer$/
+     */
+    public function entityIDShouldBeAssignedAsAnInteger()
+    {
+        Assert::assertTrue(is_integer($this->entity->getId()));
+    }
+
+    /**
+     * @When /^I delete the entity$/
+     */
+    public function iDeleteTheEntity()
+    {
+        $this->entity->delete();
     }
 }

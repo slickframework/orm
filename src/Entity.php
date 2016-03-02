@@ -38,6 +38,17 @@ abstract class Entity extends Base implements EntityInterface
     }
 
     /**
+     * Deletes current entity from its storage
+     *
+     * @return self|$this|EntityInterface
+     */
+    public function delete()
+    {
+        return $this->getMapper()
+            ->delete($this);
+    }
+
+    /**
      * Retrieves the data mapper for this entity
      */
     public function getMapper()

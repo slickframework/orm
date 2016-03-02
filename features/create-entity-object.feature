@@ -5,6 +5,7 @@
     I want to instantiate the object a and persist it using save() method
 
   Scenario: Create Michel person (entity)
-    Given I create a person named 'Joe'
+    Given I create a person named 'Michel'
     When I save it
-    Then I should see in database "people" table a row where "name" equals "Joe"
+    Then I should see in database "people" table a row where "name" equals "Michel"
+    And entity ID should be assigned as an integer

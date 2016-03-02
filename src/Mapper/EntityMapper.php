@@ -44,6 +44,11 @@ class EntityMapper implements EntityMapperInterface
     protected $adapter;
 
     /**
+     * @var string
+     */
+    protected $entityClassName;
+
+    /**
      * Saves current entity object to database
      *
      * Optionally saves only the partial data if $data argument is passed. If
@@ -69,6 +74,28 @@ class EntityMapper implements EntityMapperInterface
     }
 
     /**
+     * Deletes current entity from database
+     *
+     * @param EntityInterface $entity
+     *
+     * @return self|$this|EntityInterface
+     */
+    public function delete(EntityInterface $entity)
+    {
+        $this->entity = $entity;
+        $primaryKey = $this->getDescriptor()->getPrimaryKey()->getName();
+        $table = $this->getDescriptor()->getTableName();
+        $sql = Sql::createSql($this->getAdapter());
+        $this->setUpdateCriteria(
+            $sql->delete($table),
+            $primaryKey,
+            $table
+        )->execute();
+        $this->removeEntity($entity);
+        return $this;
+    }
+
+    /**
      * Get entity descriptor
      *
      * @return EntityDescriptorInterface
@@ -76,12 +103,9 @@ class EntityMapper implements EntityMapperInterface
     public function getDescriptor()
     {
         if (null == $this->descriptor) {
-            $class = is_object($this->entity)
-                ? get_class($this->entity)
-                : $this->entity;
             $this->setDescriptor(
                 EntityDescriptorRegistry::getInstance()
-                    ->getDescriptorFor($class)
+                    ->getDescriptorFor($this->getEntityClassName())
             );
         }
         return $this->descriptor;
@@ -124,6 +148,32 @@ class EntityMapper implements EntityMapperInterface
     }
 
     /**
+     * Gets entity class name for this mapper
+     *
+     * @return string
+     */
+    public function getEntityClassName()
+    {
+        if (null == $this->entityClassName) {
+            $this->setEntityClassName(get_class($this->entity));
+        }
+        return $this->entityClassName;
+    }
+
+    /**
+     * Sets entity class name for this mapper
+     *
+     * @param string $entityClassName
+     *
+     * @return self|$this|EntityMapper
+     */
+    public function setEntityClassName($entityClassName)
+    {
+        $this->entityClassName = $entityClassName;
+        return $this;
+    }
+
+    /**
      * Creates the insert/update query for current entity state
      *
      * @return Sql\Insert|Sql\Update
@@ -146,14 +196,14 @@ class EntityMapper implements EntityMapperInterface
     /**
      * Adds the update criteria for an update query
      *
-     * @param Sql\Update $query
+     * @param Sql\SqlInterface|Sql\Update|Sql\delete $query
      * @param string $primaryKey
      * @param string $table
      *
-     * @return Sql\Update
+     * @return Sql\SqlInterface|Sql\Update|Sql\delete
      */
     protected function setUpdateCriteria(
-        Sql\Update $query, $primaryKey, $table
+        Sql\SqlInterface $query, $primaryKey, $table
     ) {
         $key = "{$table}.{$primaryKey} = :id";
         $query->where([$key => [':id' => $this->entity->{$primaryKey}]]);
@@ -227,20 +277,7 @@ class EntityMapper implements EntityMapperInterface
         }
         return new EntityCollection($data);
     }
-
-    /**
-     * Sets entity class name
-     *
-     * @param $entityClass
-     *
-     * @return self|$this|EntityMapper
-     */
-    public function setEntity($entityClass)
-    {
-        $this->entity = $entityClass;
-        return $this;
-    }
-
+    
     /**
      * Sets the entity in the identity map of its repository.
      *
@@ -248,13 +285,26 @@ class EntityMapper implements EntityMapperInterface
      * other client gets it from the repository.
      *
      * @param EntityInterface $entity
-     * @return $this
+     * @return $this|self|EntityMapper
      */
     protected function registerEntity(EntityInterface $entity)
     {
-        Orm::getRepository(get_class($entity))
+        Orm::getRepository($this->getEntityClassName())
             ->getIdentityMap()
             ->set($entity);
         return $this;
+    }
+
+    /**
+     * Removes the entity from the identity map of its repository.
+     *
+     * @param EntityInterface $entity
+     * @return $this|self|EntityMapper
+     */
+    protected function removeEntity(EntityInterface $entity)
+    {
+        Orm::getRepository($this->getEntityClassName())
+            ->getIdentityMap()
+            ->remove($entity);
     }
 }

@@ -36,6 +36,15 @@ interface EntityMapperInterface extends AdapterAwareInterface
     public function save(EntityInterface $entity, array $data = []);
 
     /**
+     * Deletes current entity from database
+     *
+     * @param EntityInterface $entity
+     *
+     * @return self|$this|EntityInterface
+     */
+    public function delete(EntityInterface $entity);
+
+    /**
      * Creates an entity object from provided data
      *
      * Data can be an array with single row fields or a RecordList from
@@ -54,6 +63,6 @@ interface EntityMapperInterface extends AdapterAwareInterface
      *
      * @return self|$this|EntityMapperInterface
      */
-    public function setEntity($entityClass);
+    public function setEntityClassName($entityClass);
 
 }
