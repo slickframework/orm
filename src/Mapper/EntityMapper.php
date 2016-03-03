@@ -12,10 +12,9 @@ namespace Slick\Orm\Mapper;
 use Slick\Database\RecordList;
 use Slick\Database\Sql;
 use Slick\Orm\Descriptor\Field\FieldDescriptor;
-use Slick\Orm\Entity\EntityCollection;
 use Slick\Orm\EntityInterface;
 use Slick\Orm\EntityMapperInterface;
-use Slick\Orm\Event\Save;
+use Slick\Orm\Entity\EntityCollection;
 use Slick\Orm\Orm;
 
 /**

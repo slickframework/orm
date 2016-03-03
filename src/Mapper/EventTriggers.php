@@ -27,7 +27,7 @@ trait EventTriggers
     /**
      * Triggers the before save event
      *
-     * @param sql/Update|Sql/Insert $query
+     * @param \Slick\Database\Sql\SqlInterface $query
      * @param EntityInterface $entity
      * @param array $data
      *
@@ -97,5 +97,8 @@ trait EventTriggers
             ->emit($event);
     }
 
+    /**
+     * @return string
+     */
     abstract public function getEntityClassName();
 }
