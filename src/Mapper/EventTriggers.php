@@ -27,7 +27,7 @@ trait EventTriggers
     /**
      * Triggers the before save event
      *
-     * @param \Slick\Database\Sql\SqlInterface $query
+     * @param Sql/Update|Sql/Insert $query
      * @param EntityInterface $entity
      * @param array $data
      *
@@ -76,10 +76,7 @@ trait EventTriggers
      */
     protected function triggerBeforeDelete(EntityInterface $entity)
     {
-        $event = new Delete($entity);
-        $event->setAction(Delete::ACTION_BEFORE_DELETE);
-        return Orm::getEmitter($this->getEntityClassName())
-            ->emit($event);
+        return $this->triggerDelete($entity);
     }
 
     /**
@@ -91,8 +88,21 @@ trait EventTriggers
      */
     protected function triggerAfterDelete(EntityInterface $entity)
     {
+        return $this->triggerDelete($entity, Delete::ACTION_AFTER_DELETE);
+    }
+
+    /**
+     * Triggers the delete event with provided action
+     *
+     * @param EntityInterface $entity
+     * @param string $action
+     * @return \League\Event\EventInterface|Delete
+     */
+    protected function triggerDelete(
+        EntityInterface $entity, $action = Delete::ACTION_BEFORE_DELETE
+    ) {
         $event = new Delete($entity);
-        $event->setAction(Delete::ACTION_AFTER_DELETE);
+        $event->setAction($action);
         return Orm::getEmitter($this->getEntityClassName())
             ->emit($event);
     }
