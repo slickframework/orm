@@ -9,9 +9,13 @@
 
 namespace Slick\Orm;
 
+use League\Event\Emitter;
+use League\Event\EmitterInterface;
+use League\Event\ListenerInterface;
 use Slick\Database\Adapter\AdapterInterface;
 use Slick\Orm\Descriptor\EntityDescriptor;
 use Slick\Orm\Descriptor\EntityDescriptorRegistry;
+use Slick\Orm\Event\EmittersMap;
 use Slick\Orm\Exception\InvalidArgumentException;
 use Slick\Orm\Mapper\EntityMapper;
 use Slick\Orm\Mapper\MappersMap;
@@ -48,6 +52,11 @@ final class Orm
     private $repositories;
 
     /**
+     * @var EmittersMap
+     */
+    private $emitters;
+
+    /**
      * Initialize Orm registry with empty lists
      */
     private function __construct()
@@ -55,6 +64,7 @@ final class Orm
         $this->mappers = new MappersMap();
         $this->adapters = new AdaptersMap();
         $this->repositories = new RepositoryMap();
+        $this->emitters = new EmittersMap();
     }
 
     /**
@@ -106,6 +116,66 @@ final class Orm
     public static function getRepository($entityClass)
     {
         return self::getInstance()->getRepositoryFor($entityClass);
+    }
+
+    /**
+     * Gets event emitter for provided entity class
+     *
+     * @param string $entityClass FQ entity class name
+     *
+     * @return Emitter
+     */
+    public static function getEmitter($entityClass)
+    {
+        return self::getInstance()->getEmitterFor($entityClass);
+    }
+
+    /**
+     * Add a listener for an entity event.
+     *
+     * The $event parameter should be the event name, and the second should be
+     * the event listener. It may implement the League\Event\ListenerInterface
+     * or simply be "callable". In this case, the priority emitter also accepts
+     * an optional third parameter specifying the priority as an integer. You
+     * may use one of EmitterInterface predefined constants here if you want.
+     *
+     * @param string|EntityInterface     $entityClass
+     * @param string                     $event
+     * @param ListenerInterface|callable $listener
+     * @param int                        $priority
+     *
+     * @return EmitterInterface
+     */
+    public static function addListener(
+        $entityClass, $event, $listener, $priority = EmitterInterface::P_NORMAL
+    ) {
+        return self::getInstance()->addListenerFor($entityClass,$event, $listener, $priority);
+    }
+
+    /**
+     * Add a listener for an entity event.
+     *
+     * The $event parameter should be the event name, and the second should be
+     * the event listener. It may implement the League\Event\ListenerInterface
+     * or simply be "callable". In this case, the priority emitter also accepts
+     * an optional third parameter specifying the priority as an integer. You
+     * may use one of EmitterInterface predefined constants here if you want.
+     *
+     * @param string|EntityInterface     $entityClass
+     * @param string                     $event
+     * @param ListenerInterface|callable $listener
+     * @param int                        $priority
+     *
+     * @return EmitterInterface
+     */
+    public function addListenerFor(
+        $entityClass, $event, $listener, $priority = EmitterInterface::P_NORMAL
+    ) {
+        $className = is_object($entityClass)
+            ? get_class($entityClass)
+            : $entityClass;
+        return $this->getEmitterFor($className)
+            ->addListener($event, $listener, $priority);
     }
 
     /**
@@ -168,6 +238,20 @@ final class Orm
     }
 
     /**
+     * Gets the event emitter for provided entity
+     *
+     * @param string $entity
+     *
+     * @return Emitter
+     */
+    public function getEmitterFor($entity)
+    {
+        return $this->emitters->containsKey($entity)
+            ? $this->emitters->get($entity)
+            : $this->createEmitter($entity);
+    }
+
+    /**
      * Sets default adapter
      *
      * @param AdapterInterface $adapter
@@ -209,6 +293,19 @@ final class Orm
             ->setEntityClassName($entity);
         $this->mappers->set($entity, $mapper);
         return $mapper;
+    }
+
+    /**
+     * Creates an emitter for provided entity class name
+     *
+     * @param string $entity
+     * @return Emitter
+     */
+    private function createEmitter($entity)
+    {
+        $emitter = new Emitter();
+        $this->emitters->set($entity, $emitter);
+        return $emitter;
     }
 
     /**

@@ -18,6 +18,7 @@ use Slick\Orm\Descriptor\Field\FieldDescriptor;
 use Slick\Orm\Entity\EntityCollection;
 use Slick\Orm\EntityInterface;
 use Slick\Orm\EntityMapperInterface;
+use Slick\Orm\Event\Save;
 use Slick\Orm\Orm;
 
 /**
@@ -63,12 +64,30 @@ class EntityMapper implements EntityMapperInterface
     {
         $this->entity = $entity;
         $query = $this->getUpdateQuery();
-        $query->set($this->getData())
+        $data = $this->getData();
+
+        $save = $query instanceof Sql\Insert
+            ? (new Save($entity, $data))
+                ->setAction(Save::ACTION_BEFORE_INSERT)
+            : (new Save($entity, $data))
+                ->setAction(Save::ACTION_BEFORE_UPDATE);
+
+        /** @var Save $save */
+        $save = Orm::getEmitter($this->getEntityClassName())->emit($save);
+        $query->set($data)
             ->execute();
         $lastId = $query->getAdapter()->getLastInsertId();
         if ($lastId) {
             $entity->setId($lastId);
         }
+
+        $action = $save->getName() == Save::ACTION_BEFORE_INSERT
+            ? Save::ACTION_AFTER_INSERT
+            : Save::ACTION_BEFORE_UPDATE;
+
+        $save->setEntity($entity)->setAction($action);
+        Orm::getEmitter($this->getEntityClassName())->emit($save);
+
         $this->registerEntity($entity);
         return $this;
     }
