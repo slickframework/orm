@@ -10,17 +10,16 @@
 namespace Slick\Orm\Event;
 
 /**
- * ORM Save event
+ * ORM Delete Event
  *
  * @package Slick\Orm\Event
  * @author  Filipe Silva <silvam.filipe@gmail.com>
  */
-class Save extends AbstractEvent implements EventInterface
+class Delete extends AbstractEvent implements EventInterface
 {
-    const ACTION_BEFORE_INSERT = 'before.insert';
-    const ACTION_AFTER_INSERT  = 'after.insert';
-    const ACTION_BEFORE_UPDATE = 'before.update';
-    const ACTION_AFTER_UPDATE  = 'after.update';
+
+    const ACTION_BEFORE_DELETE = 'before.delete';
+    const ACTION_AFTER_DELETE  = 'after.delete';
 
     /**
      * @var string
@@ -30,5 +29,5 @@ class Save extends AbstractEvent implements EventInterface
     /**
      * @var string
      */
-    protected $action = self::ACTION_BEFORE_INSERT;
+    protected $action = self::ACTION_BEFORE_DELETE;
 }

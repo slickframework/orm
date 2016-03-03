@@ -9,11 +9,8 @@
 
 namespace Slick\Orm\Mapper;
 
-use Slick\Database\Adapter\AdapterInterface;
 use Slick\Database\RecordList;
 use Slick\Database\Sql;
-use Slick\Orm\Descriptor\EntityDescriptorInterface;
-use Slick\Orm\Descriptor\EntityDescriptorRegistry;
 use Slick\Orm\Descriptor\Field\FieldDescriptor;
 use Slick\Orm\Entity\EntityCollection;
 use Slick\Orm\EntityInterface;
@@ -27,27 +24,14 @@ use Slick\Orm\Orm;
  * @package Slick\Orm\Mapper
  * @author  Filipe Silva <silvam.filipe@gmail.com>
  */
-class EntityMapper implements EntityMapperInterface
+class EntityMapper extends AbstractEntityMapper implements
+    EntityMapperInterface
 {
-    /**
-     * @var EntityDescriptorInterface
-     */
-    protected $descriptor;
 
     /**
-     * @var EntityInterface
+     * Add event trigger helpers
      */
-    protected $entity;
-
-    /**
-     * @var AdapterInterface
-     */
-    protected $adapter;
-
-    /**
-     * @var string
-     */
-    protected $entityClassName;
+    use EventTriggers;
 
     /**
      * Saves current entity object to database
@@ -65,15 +49,8 @@ class EntityMapper implements EntityMapperInterface
         $this->entity = $entity;
         $query = $this->getUpdateQuery();
         $data = $this->getData();
+        $save = $this->triggerBeforeSave($query, $entity, $data);
 
-        $save = $query instanceof Sql\Insert
-            ? (new Save($entity, $data))
-                ->setAction(Save::ACTION_BEFORE_INSERT)
-            : (new Save($entity, $data))
-                ->setAction(Save::ACTION_BEFORE_UPDATE);
-
-        /** @var Save $save */
-        $save = Orm::getEmitter($this->getEntityClassName())->emit($save);
         $query->set($data)
             ->execute();
         $lastId = $query->getAdapter()->getLastInsertId();
@@ -81,12 +58,7 @@ class EntityMapper implements EntityMapperInterface
             $entity->setId($lastId);
         }
 
-        $action = $save->getName() == Save::ACTION_BEFORE_INSERT
-            ? Save::ACTION_AFTER_INSERT
-            : Save::ACTION_BEFORE_UPDATE;
-
-        $save->setEntity($entity)->setAction($action);
-        Orm::getEmitter($this->getEntityClassName())->emit($save);
+        $this->triggerAfterSave($save, $entity);
 
         $this->registerEntity($entity);
         return $this;
@@ -105,90 +77,17 @@ class EntityMapper implements EntityMapperInterface
         $primaryKey = $this->getDescriptor()->getPrimaryKey()->getName();
         $table = $this->getDescriptor()->getTableName();
         $sql = Sql::createSql($this->getAdapter());
+
+        $this->triggerBeforeDelete($entity);
+
         $this->setUpdateCriteria(
             $sql->delete($table),
             $primaryKey,
             $table
         )->execute();
+
+        $this->triggerAfterDelete($entity);
         $this->removeEntity($entity);
-        return $this;
-    }
-
-    /**
-     * Get entity descriptor
-     *
-     * @return EntityDescriptorInterface
-     */
-    public function getDescriptor()
-    {
-        if (null == $this->descriptor) {
-            $this->setDescriptor(
-                EntityDescriptorRegistry::getInstance()
-                    ->getDescriptorFor($this->getEntityClassName())
-            );
-        }
-        return $this->descriptor;
-    }
-
-    /**
-     * Set entity descriptor
-     *
-     * @param EntityDescriptorInterface $descriptor
-     *
-     * @return $this|self|EntityMapper
-     */
-    public function setDescriptor($descriptor)
-    {
-        $this->descriptor = $descriptor;
-        return $this;
-    }
-
-    /**
-     * Sets the adapter for this mapper
-     *
-     * @param AdapterInterface $adapter
-     *
-     * @return self|$this|EntityMapper
-     */
-    public function setAdapter(AdapterInterface $adapter)
-    {
-        $this->adapter = $adapter;
-        return $this;
-    }
-
-    /**
-     * Retrieves the current adapter
-     *
-     * @return AdapterInterface
-     */
-    public function getAdapter()
-    {
-        return $this->adapter;
-    }
-
-    /**
-     * Gets entity class name for this mapper
-     *
-     * @return string
-     */
-    public function getEntityClassName()
-    {
-        if (null == $this->entityClassName) {
-            $this->setEntityClassName(get_class($this->entity));
-        }
-        return $this->entityClassName;
-    }
-
-    /**
-     * Sets entity class name for this mapper
-     *
-     * @param string $entityClassName
-     *
-     * @return self|$this|EntityMapper
-     */
-    public function setEntityClassName($entityClassName)
-    {
-        $this->entityClassName = $entityClassName;
         return $this;
     }
 

@@ -20,10 +20,6 @@ use Slick\Orm\EntityInterface;
  */
 interface EventInterface extends LeagueEventInterface
 {
-    const ACTION_BEFORE_UPDATE = 'before.update';
-    const ACTION_AFTER_UPDATE  = 'after.update';
-    const ACTION_BEFORE_DELETE = 'before.delete';
-    const ACTION_AFTER_DELETE  = 'after.delete';
 
     /**
      * Sets the name of the class that triggers the event

@@ -59,6 +59,19 @@ class EntityTest extends TestCase
         $this->entity->save();
     }
 
+    public function testDelete()
+    {
+        $mapper = $this->getMockedMapper();
+        $mapper->expects($this->once())
+            ->method('delete')
+            ->with($this->entity)
+            ->willReturn(1);
+        $this->entity->expects($this->once())
+            ->method('getMapper')
+            ->willReturn($mapper);
+        $this->entity->delete();
+    }
+
     public function testGetMapper()
     {
         /** @var AdapterInterface $adapter */

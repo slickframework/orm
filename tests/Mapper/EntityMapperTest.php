@@ -13,6 +13,7 @@ use PHPUnit_Framework_TestCase as TestCase;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use Slick\Database\Adapter\AdapterInterface;
 use Slick\Database\RecordList;
+use Slick\Database\Sql\Delete;
 use Slick\Database\Sql\Insert;
 use Slick\Database\Sql\Update;
 use Slick\Orm\Descriptor\EntityDescriptorRegistry;
@@ -108,6 +109,26 @@ class EntityMapperTest extends TestCase
             ->willReturn(1);
         $this->mapper->setAdapter($adapter);
         $this->assertSame($this->mapper, $this->mapper->save($mike));
+    }
+
+    /**
+     * Should use adapter to execute an Delete query
+     * @test
+     */
+    public function deleteEntity()
+    {
+        $mike = new Person(['name' => 'Mike', 'id' => 1]);
+        $adapter = $this->getAdapterMock();
+        $adapter->expects($this->once())
+            ->method('execute')
+            ->with(
+                $this->isInstanceOf(Delete::class),
+                $this->isType('array')
+            )
+            ->willReturn(1);
+
+        $this->mapper->setAdapter($adapter);
+        $this->assertSame($this->mapper, $this->mapper->delete($mike));
     }
 
     /**

@@ -62,6 +62,11 @@ class OrmContext extends \AbstractContext implements
      */
     protected $lastEntity;
 
+    /**
+     * @var Listener
+     */
+    protected $listener;
+
 
     /**
      * Create a person with provided name
@@ -226,5 +231,32 @@ class OrmContext extends \AbstractContext implements
     public function iDeleteTheEntity()
     {
         $this->entity->delete();
+    }
+
+    /**
+     * @Given /^I register a listener to "([^"]*)" event$/
+     */
+    public function iRegisterAListenerToEvent($event)
+    {
+        Orm::addListener(Person::class, $event, $this->getListener());
+    }
+
+    /**
+     * @Then /^A "([^"]*)" event was triggered$/
+     */
+    public function aEventWasTriggered($event)
+    {
+        Assert::assertEquals($event, $this->getListener()->event->getName());
+    }
+
+    /**
+     * @return Listener
+     */
+    protected function getListener()
+    {
+        if (null == $this->listener) {
+            $this->listener = new Listener();
+        }
+        return $this->listener;
     }
 }

@@ -75,7 +75,7 @@ abstract class AbstractEvent extends LeagueAbstractEvent implements EventInterfa
         if (null == $this->entityName) {
             $this->setEntityName(get_class($this->getEntity()));
         }
-        return $this;
+        return $this->entityName;
     }
 
     /**

@@ -131,6 +131,19 @@ final class Orm
     }
 
     /**
+     * Sets the emitter for provided class name
+     *
+     * @param string $entityClass
+     * @param EmitterInterface $emitter
+     * @return $this|self|Orm
+     */
+    public function setEmitter($entityClass, EmitterInterface $emitter)
+    {
+        $this->emitters->set($entityClass, $emitter);
+        return $this;
+    }
+
+    /**
      * Add a listener for an entity event.
      *
      * The $event parameter should be the event name, and the second should be

@@ -9,7 +9,9 @@
 
 namespace Slick\Tests\Orm;
 
+use League\Event\EmitterInterface;
 use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use Slick\Database\Adapter\AdapterInterface;
 use Slick\Orm\EntityMapperInterface;
 use Slick\Orm\Orm;
@@ -90,6 +92,36 @@ class OrmTest extends TestCase
     public function ormCreatesRepositoriesOnlyForEntities()
     {
         Orm::getRepository(\stdClass::class);
+    }
+
+    /**
+     * Add a listener to the entity emitter
+     * @test
+     */
+    public function addListener()
+    {
+        $emitter = $this->getEmitterMock();
+        $emitter->expects($this->once())
+            ->method('addListener')
+            ->with('get.test', $this->isType('callable'))
+            ->willReturn($this->returnSelf());
+        Orm::getInstance()->setEmitter('test', $emitter);
+        Orm::addListener('test', 'get.test', function(){});
+    }
+
+    /**
+     * Get a mocker emitter
+     * @return EmitterInterface|MockObject
+     */
+    protected function getEmitterMock()
+    {
+        $class = EmitterInterface::class;
+        $methods = get_class_methods($class);
+        /** @var EmitterInterface|MockObject $emitter */
+        $emitter = $this->getMockBuilder($class)
+            ->setMethods($methods)
+            ->getMock();
+        return $emitter;
     }
 
 }

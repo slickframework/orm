@@ -9,3 +9,4 @@
     When I save it
     Then I should see in database "people" table a row where "name" equals "Michel"
     And entity ID should be assigned as an integer
+    Then I delete the entity
