@@ -326,7 +326,7 @@ final class Orm
      *
      * @param string $entity
      *
-     * @return EntityDescriptor|string
+     * @return string
      */
     private function getAdapterAlias($entity)
     {
