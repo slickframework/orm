@@ -11,7 +11,6 @@ namespace Slick\Orm\Repository;
 
 use Slick\Database\Sql;
 use Slick\Orm\EntityInterface;
-use Slick\Orm\EntityMapperInterface;
 use Slick\Orm\RepositoryInterface;
 
 /**
@@ -23,6 +22,18 @@ use Slick\Orm\RepositoryInterface;
 class EntityRepository extends AbstractRepository implements
     RepositoryInterface
 {
+
+    /**
+     * Finds entities
+     *
+     * @return QueryObject
+     *
+     * @see Slick\Database\Sql\Select
+     */
+    public function find()
+    {
+        return new QueryObject($this);
+    }
 
     /**
      * Gets an entity by its id

@@ -11,6 +11,8 @@ namespace Slick\Orm;
 
 use Slick\Database\Adapter\AdapterAwareInterface;
 use Slick\Orm\Descriptor\EntityDescriptorInterface;
+use Slick\Orm\Repository\IdentityMapInterface;
+use Slick\Orm\Repository\QueryObjectInterface;
 
 /**
  * Entity Repository Interface
@@ -31,10 +33,19 @@ interface RepositoryInterface extends AdapterAwareInterface
     public function get($entityId);
 
     /**
+     * Finds entities
+     *
+     * @return QueryObjectInterface
+     *
+     * @see Slick\Database\Sql\Select
+     */
+    public function find();
+
+    /**
      * Set the entity descriptor interface
      *
      * @param EntityDescriptorInterface $descriptor
-     * @return $this|self|AbstractRepository
+     * @return $this|self|RepositoryInterface
      */
     public function setEntityDescriptor(EntityDescriptorInterface $descriptor);
 
@@ -44,4 +55,18 @@ interface RepositoryInterface extends AdapterAwareInterface
      * @return EntityDescriptorInterface
      */
     public function getEntityDescriptor();
+
+    /**
+     * Gets the entity mapper fot current repository
+     *
+     * @return EntityMapperInterface
+     */
+    public function getEntityMapper();
+
+    /**
+     * Gets identity map for this repository
+     *
+     * @return IdentityMapInterface
+     */
+    public function getIdentityMap();
 }
