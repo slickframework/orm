@@ -66,9 +66,7 @@ class EntityRepository extends AbstractRepository implements
         $primaryKey = $this->getEntityDescriptor()
             ->getPrimaryKey()
             ->getField();
-
-        $data = Sql::createSql($this->getAdapter())
-            ->select($this->getEntityDescriptor()->getTableName())
+        return $this->find()
             ->where(
                 [
                     "{$table}.{$primaryKey} = :id" => [
@@ -77,11 +75,5 @@ class EntityRepository extends AbstractRepository implements
                 ]
             )
             ->first();
-        $entity = null;
-        if ($data) {
-            $entity = $this->getEntityMapper()->createFrom($data);
-            $this->getIdentityMap()->set($entity);
-        }
-        return $entity;
     }
 }

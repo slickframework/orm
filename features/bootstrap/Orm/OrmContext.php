@@ -72,6 +72,11 @@ class OrmContext extends \AbstractContext implements
      */
     protected $collection;
 
+    /**
+     * @var mixed
+     */
+    protected $selectedValue;
+
 
     /**
      * Create a person with provided name
@@ -296,5 +301,23 @@ class OrmContext extends \AbstractContext implements
     {
         $this->lastEntity = $this->entity;
         $this->entity = $this->repository->find()->first();
+    }
+
+    /**
+     * @Then /^property should be an instance of "([^"]*)"$/
+     * @param string $expected
+     */
+    public function propertyShouldBeAnInstanceOfDomainPerson($expected)
+    {
+        Assert::assertInstanceOf($expected, $this->selectedValue);
+    }
+
+    /**
+     * @param $property
+     * @When /^I retrieve entity "([^"]*)" property$/
+     */
+    public function iRetrieveEntityProperty($property)
+    {
+        $this->selectedValue = $this->entity->$property;
     }
 }

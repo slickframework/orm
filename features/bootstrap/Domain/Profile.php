@@ -7,42 +7,49 @@
  * file that was distributed with this source code.
  */
 
-namespace Slick\Tests\Orm\Descriptor;
+namespace Domain;
 
-use Slick\Orm\Annotations\Column;
 use Slick\Orm\Entity;
-use Slick\Orm\EntityInterface;
+use Slick\Orm\Annotations\Column;
+use Slick\Orm\Annotations\BelongsTo;
 
 /**
- * Test entity Person
+ * Profile
  *
- * @package Slick\Tests\Orm\Descriptor
- * @author  Filipe Silva
- *
- * @table users
- * @adapter default
+ * @package Domain
+ * @author  Filipe Silva <silvam.filipe@gmail.com>
  */
-class Person extends Entity implements EntityInterface
+class Profile extends Entity
 {
-    /**
-     * @readwrite
-     * @column type=integer, primaryKey, autoIncrement, field=uid
-     * @var int
-     */
-    public $id;
 
     /**
      * @readwrite
-     * @Column type=text, size=tiny
-     * @var string
+     * @Column type=integer, primaryKey, autoIncrement
+     * @var integer
      */
-    public $name;
+    protected $id;
 
     /**
+     * @readwrite
+     * @Column type=text
      * @var string
      */
-    public $other;
+    protected $email;
 
+    /**
+     * @readwrite
+     * @BelongsTo Domain\Person
+     * @var Person
+     */
+    protected $person;
+
+    /**
+     * Returns entity ID
+     *
+     * This is usually the primary key or a UUID
+     *
+     * @return integer
+     */
     public function getId()
     {
         return $this->id;
@@ -53,7 +60,7 @@ class Person extends Entity implements EntityInterface
      *
      * @param mixed $entityId Primary key or a UUID
      *
-     * @return self|$this|EntityInterface
+     * @return self|$this|Profile
      */
     public function setId($entityId)
     {

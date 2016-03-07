@@ -9,32 +9,26 @@
 
 namespace Slick\Orm\Annotations;
 
-use Slick\Database\Sql\Ddl\Column\Size;
-
 /**
- * Column annotation
+ * BelongsTo annotation (many-to-one)
  *
  * @package Slick\Orm\Annotations
- * @author  Filipe Silva <silvam.filipe@gmail.com>
+ * @author  Filipe Silva <silam.filipe@gmail.com>
  */
-class Column extends OrmAnnotation
+class BelongsTo extends OrmAnnotation
 {
 
     /**
      * @var string
      */
-    protected $name = 'column';
+    protected $name = 'belongsTo';
 
     /**
      * @var array
      */
     protected $parameters = [
-        'type' => 'text',
-        'length' => null,
-        'size' => Size::TINY,
-        'field' => null,
-        'autoIncrement' => false,
-        'primaryKey' => false,
-        'index' => false
+        'className' => null,
+        'foreignKey' => null
     ];
+
 }

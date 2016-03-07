@@ -12,6 +12,7 @@ namespace Slick\Tests\Orm\Repository;
 use PHPUnit_Framework_TestCase as TestCase;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use Slick\Database\Adapter\AdapterInterface;
+use Slick\Database\Sql\Dialect;
 use Slick\Database\Sql\Select;
 use Slick\Orm\Descriptor\EntityDescriptorRegistry;
 use Slick\Orm\Orm;
@@ -91,6 +92,9 @@ class EntityRepositoryTest extends TestCase
             ->method('query')
             ->with($this->isInstanceOf(Select::class))
             ->willReturn([$data]);
+        $adapter->expects($this->once())
+            ->method('getDialect')
+            ->willReturn(Dialect::MYSQL);
         $this->repository->setAdapter($adapter)
             ->setIdentityMap($idMap)
             ->setEntityMapper(Orm::getMapper(Person::class));
