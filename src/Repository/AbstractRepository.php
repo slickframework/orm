@@ -11,6 +11,8 @@ namespace Slick\Orm\Repository;
 
 use Slick\Database\Adapter\AdapterInterface;
 use Slick\Orm\Descriptor\EntityDescriptorInterface;
+use Slick\Orm\Entity\CollectionsMap;
+use Slick\Orm\Entity\CollectionsMapInterface;
 use Slick\Orm\EntityMapperInterface;
 
 /**
@@ -41,6 +43,11 @@ abstract class AbstractRepository
      * @var IdentityMapInterface
      */
     protected $identityMap;
+
+    /**
+     * @var CollectionsMapInterface;
+     */
+    protected $collectionsMap;
 
     /**
      * Sets the adapter for this statement
@@ -129,5 +136,33 @@ abstract class AbstractRepository
         }
         return $this->identityMap;
     }
+
+    /**
+     * Gets the collections map for this repository
+     *
+     * @return CollectionsMapInterface
+     */
+    public function getCollectionsMap()
+    {
+        if (null == $this->collectionsMap) {
+            $this->setCollectionsMap(new CollectionsMap());
+        }
+        return $this->collectionsMap;
+    }
+
+    /**
+     * Sets the collections map
+     *
+     * @param CollectionsMapInterface $collectionsMap
+     *
+     * @return $this|self|EntityRepository
+     */
+    public function setCollectionsMap(CollectionsMapInterface $collectionsMap)
+    {
+        $this->collectionsMap = $collectionsMap;
+        return $this;
+    }
+
+
 
 }

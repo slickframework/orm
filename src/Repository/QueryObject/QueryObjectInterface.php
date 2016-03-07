@@ -7,11 +7,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Slick\Orm\Repository;
+namespace Slick\Orm\Repository\QueryObject;
 
 use Slick\Database\Sql\ConditionsAwareInterface;
 use Slick\Orm\Entity\EntityCollection;
 use Slick\Orm\EntityInterface;
+use Slick\Orm\RepositoryInterface;
 
 /**
  * QueryObject Interface
@@ -38,4 +39,11 @@ interface QueryObjectInterface extends
      * @return EntityInterface|null
      */
     public function first();
+
+    /**
+     * Returns the repository that is using this query object
+     *
+     * @return RepositoryInterface
+     */
+    public function getRepository();
 }

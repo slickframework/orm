@@ -11,6 +11,8 @@ namespace Slick\Orm\Repository;
 
 use Slick\Database\Sql;
 use Slick\Orm\EntityInterface;
+use Slick\Orm\Repository\QueryObject\QueryObject;
+use Slick\Orm\Repository\QueryObject\QueryObjectInterface;
 use Slick\Orm\RepositoryInterface;
 
 /**
@@ -26,7 +28,7 @@ class EntityRepository extends AbstractRepository implements
     /**
      * Finds entities
      *
-     * @return QueryObject
+     * @return QueryObjectInterface
      *
      * @see Slick\Database\Sql\Select
      */

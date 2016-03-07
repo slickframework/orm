@@ -11,8 +11,9 @@ namespace Slick\Orm;
 
 use Slick\Database\Adapter\AdapterAwareInterface;
 use Slick\Orm\Descriptor\EntityDescriptorInterface;
+use Slick\Orm\Entity\CollectionsMapInterface;
 use Slick\Orm\Repository\IdentityMapInterface;
-use Slick\Orm\Repository\QueryObjectInterface;
+use Slick\Orm\Repository\QueryObject\QueryObjectInterface;
 
 /**
  * Entity Repository Interface
@@ -69,4 +70,11 @@ interface RepositoryInterface extends AdapterAwareInterface
      * @return IdentityMapInterface
      */
     public function getIdentityMap();
+
+    /**
+     * Gets the collections map for this repository
+     *
+     * @return CollectionsMapInterface
+     */
+    public function getCollectionsMap();
 }

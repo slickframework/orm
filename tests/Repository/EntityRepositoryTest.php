@@ -98,6 +98,16 @@ class EntityRepositoryTest extends TestCase
     }
 
     /**
+     * Should create an ObjectQuery with calling repository
+     * @test
+     */
+    public function find()
+    {
+        $queryObject = $this->repository->find();
+        $this->assertSame($this->repository, $queryObject->getRepository());
+    }
+
+    /**
      * Get a mocked object from provided class
      *
      * @param string $class

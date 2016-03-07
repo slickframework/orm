@@ -10,6 +10,7 @@
 namespace Slick\Tests\Orm\Repository;
 
 use PHPUnit_Framework_TestCase as TestCase;
+use Slick\Orm\Entity\CollectionsMapInterface;
 use Slick\Orm\Repository\AbstractRepository;
 use Slick\Orm\Repository\IdentityMapInterface;
 
@@ -46,5 +47,15 @@ class AbstractRepositoryTest extends TestCase
     {
         $idMap = $this->repository->getIdentityMap();
         $this->assertInstanceOf(IdentityMapInterface::class, $idMap);
+    }
+
+    /**
+     * Should create a new collection map in none is set
+     * @test
+     */
+    public function getCollectionsMap()
+    {
+        $colMap = $this->repository->getCollectionsMap();
+        $this->assertInstanceOf(CollectionsMapInterface::class, $colMap);
     }
 }

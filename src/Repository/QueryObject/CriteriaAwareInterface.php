@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Slick\Orm\Repository;
+namespace Slick\Orm\Repository\QueryObject;
 
 /**
  * CriteriaAware Interface

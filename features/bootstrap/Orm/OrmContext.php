@@ -67,6 +67,11 @@ class OrmContext extends \AbstractContext implements
      */
     protected $listener;
 
+    /**
+     * @var Entity\EntityCollection
+     */
+    protected $collection;
+
 
     /**
      * Create a person with provided name
@@ -258,5 +263,38 @@ class OrmContext extends \AbstractContext implements
             $this->listener = new Listener();
         }
         return $this->listener;
+    }
+
+    /**
+     * @When /^I try to find all entities$/
+     */
+    public function iTryToFindAllEntities()
+    {
+        $this->collection = $this->repository->find()->all();
+    }
+
+    /**
+     * @Then /^I should get an entity collection$/
+     */
+    public function iShouldGetAnEntityCollection()
+    {
+        Assert::assertInstanceOf(Entity\EntityCollection::class, $this->collection);
+    }
+
+    /**
+     * @Then /^it should be the same as entity in collection at position "([^"]*)"$/
+     */
+    public function itShouldBeTheSameAsEntityInCollectionAtPosition($offset)
+    {
+        Assert::assertSame($this->collection[$offset], $this->entity);
+    }
+
+    /**
+     * @When /^I try to find first match$/
+     */
+    public function iTryToFindFirstMatch()
+    {
+        $this->lastEntity = $this->entity;
+        $this->entity = $this->repository->find()->first();
     }
 }
