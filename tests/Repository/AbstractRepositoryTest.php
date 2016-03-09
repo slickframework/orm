@@ -11,6 +11,7 @@ namespace Slick\Tests\Orm\Repository;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use Slick\Orm\Entity\CollectionsMapInterface;
+use Slick\Orm\EntityMapperInterface;
 use Slick\Orm\Repository\AbstractRepository;
 use Slick\Orm\Repository\IdentityMapInterface;
 
@@ -57,5 +58,15 @@ class AbstractRepositoryTest extends TestCase
     {
         $colMap = $this->repository->getCollectionsMap();
         $this->assertInstanceOf(CollectionsMapInterface::class, $colMap);
+    }
+
+    /**
+     * @test
+     */
+    public function getEntityMapper()
+    {
+        $entityMapper = $this->getMock(EntityMapperInterface::class);
+        $this->repository->setEntityMapper($entityMapper);
+        $this->assertSame($entityMapper, $this->repository->getEntityMapper());
     }
 }

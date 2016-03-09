@@ -12,12 +12,16 @@ namespace Slick\Tests\Orm\Repository;
 use PHPUnit_Framework_TestCase as TestCase;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use Slick\Database\Adapter\AdapterInterface;
+use Slick\Database\RecordList;
 use Slick\Database\Sql\Dialect;
 use Slick\Database\Sql\Select;
+use Slick\Orm\Descriptor\EntityDescriptorInterface;
 use Slick\Orm\Descriptor\EntityDescriptorRegistry;
+use Slick\Orm\Descriptor\Field\FieldDescriptor;
 use Slick\Orm\Orm;
 use Slick\Orm\Repository\EntityRepository;
 use Slick\Orm\Repository\IdentityMapInterface;
+use Slick\Orm\Repository\QueryObject\QueryObject;
 use Slick\Tests\Orm\Descriptor\Person;
 
 /**
@@ -72,7 +76,43 @@ class EntityRepositoryTest extends TestCase
      */
     public function getAnEntityFromDb()
     {
-        $this->assertTrue(true);
+
+
+        $field = new FieldDescriptor(
+            [
+                'primaryKey' => true,
+                'name' => 'id',
+                'field' => 'uid'
+            ]
+        );
+        /** @var EntityDescriptorInterface|MockObject $entityDescriptor */
+        $entityDescriptor = $this->getMocked(EntityDescriptorInterface::class);
+        $entityDescriptor->method('getTableName')->willReturn('people');
+        $entityDescriptor->method('getPrimaryKey')->willReturn($field);
+        /** @var EntityRepository|MockObject $repository */
+        $repository = $this->getMockBuilder(EntityRepository::class)
+            ->setMethods(['find'])
+            ->getMock();
+        /** @var AdapterInterface $adapter */
+        $adapter = $this->getMock(AdapterInterface::class);
+        $repository->setAdapter($adapter)
+            ->setEntityDescriptor($entityDescriptor);
+
+        $queryObject = $this->getMockBuilder(QueryObject::class)
+            ->setMethods(['where', 'first'])
+            ->setConstructorArgs([$repository])
+            ->getMock();
+        $repository->expects($this->once())
+            ->method('find')
+            ->willReturn($queryObject);
+        $queryObject->expects($this->once())
+            ->method('where')
+            ->with(['people.uid = :id' => [':id' => 20]])
+            ->willReturn($queryObject);
+        $queryObject->expects($this->once())
+            ->method('first')
+            ->willReturn(new Person(['id' => '20', 'name' => 'Mike']));
+        $repository->get(20);
     }
 
     /**
