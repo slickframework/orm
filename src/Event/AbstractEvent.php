@@ -47,7 +47,7 @@ abstract class AbstractEvent extends LeagueAbstractEvent implements EventInterfa
      * @param EntityInterface $entity
      * @param mixed $params additional parameters
      */
-    public function __construct(EntityInterface $entity, $params = null)
+    public function __construct(EntityInterface $entity = null, $params = null)
     {
         $this->setEntity($entity);
         $this->params = $params;
@@ -96,7 +96,7 @@ abstract class AbstractEvent extends LeagueAbstractEvent implements EventInterfa
      * @param EntityInterface $entity
      * @return self|EventInterface|$this
      */
-    public function setEntity(EntityInterface $entity)
+    public function setEntity(EntityInterface $entity = null)
     {
         $this->entity = $entity;
         return $this;

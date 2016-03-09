@@ -29,6 +29,11 @@ class QueryObject extends Select implements QueryObjectInterface
     protected $repository;
 
     /**
+     * For triggering events
+     */
+    use SelectEventTriggers;
+
+    /**
      * QueryObject has a repository as a dependency.
      *
      * @param RepositoryInterface $repository
@@ -81,9 +86,17 @@ class QueryObject extends Select implements QueryObjectInterface
             ->get($cid, false);
 
         if (false === $collection) {
+            $this->triggerBeforeSelect(
+                $sql,
+                $this->getRepository()->getEntityDescriptor()
+            );
             $data = $this->adapter->query($sql, $sql->getParameters());
             $collection = $this->repository->getEntityMapper()
                 ->createFrom($data);
+            $this->triggerAfterSelect(
+                $data,
+                $collection
+            );
             $this->repository->getCollectionsMap()->set($cid, $collection);
             $this->updateIdentityMap($collection);
         }
@@ -136,5 +149,15 @@ class QueryObject extends Select implements QueryObjectInterface
     public function getRepository()
     {
         return $this->repository;
+    }
+
+    /**
+     * Gets current entity class name
+     *
+     * @return string
+     */
+    public function getEntityClassName()
+    {
+        return $this->repository->getEntityDescriptor()->className();
     }
 }
