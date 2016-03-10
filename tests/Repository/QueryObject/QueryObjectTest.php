@@ -69,7 +69,7 @@ class QueryObjectTest extends TestCase
         $collectionsMap = $this->getMockedCollectionMap();
         $collectionsMap->expects($this->once())
             ->method('get')
-            ->with('SELECT * FROM people', false)
+            ->with('SELECT people.* FROM people', false)
             ->willReturn($collection);
         /** @var RepositoryInterface|MockObject $repository */
         $repository = $this->queryObject->getRepository();
@@ -91,11 +91,11 @@ class QueryObjectTest extends TestCase
         $collectionsMap = $this->getMockedCollectionMap();
         $collectionsMap->expects($this->once())
             ->method('get')
-            ->with('SELECT * FROM people', false)
+            ->with('SELECT people.* FROM people', false)
             ->willReturn(false);
         $collectionsMap->expects($this->once())
             ->method('set')
-            ->with('SELECT * FROM people', $collection);
+            ->with('SELECT people.* FROM people', $collection);
 
         // Adapter mock
         $adapter = $this->getMockedAdapter();
@@ -144,11 +144,11 @@ class QueryObjectTest extends TestCase
         $collectionsMap = $this->getMockedCollectionMap();
         $collectionsMap->expects($this->once())
             ->method('get')
-            ->with('SELECT * FROM people LIMIT 1', false)
+            ->with('SELECT people.* FROM people LIMIT 1', false)
             ->willReturn(false);
         $collectionsMap->expects($this->once())
             ->method('set')
-            ->with('SELECT * FROM people LIMIT 1', $collection);
+            ->with('SELECT people.* FROM people LIMIT 1', $collection);
 
         // Adapter mock
         $adapter = $this->getMockedAdapter();
@@ -195,11 +195,11 @@ class QueryObjectTest extends TestCase
         $collectionsMap = $this->getMockedCollectionMap();
         $collectionsMap->expects($this->once())
             ->method('get')
-            ->with('SELECT * FROM people', false)
+            ->with('SELECT people.* FROM people', false)
             ->willReturn(false);
         $collectionsMap->expects($this->once())
             ->method('set')
-            ->with('SELECT * FROM people', $collection);
+            ->with('SELECT people.* FROM people', $collection);
 
         // Adapter mock
         $adapter = $this->getMockedAdapter();

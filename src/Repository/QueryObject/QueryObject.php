@@ -43,7 +43,8 @@ class QueryObject extends Select implements QueryObjectInterface
         $this->repository = $repository;
         $this->adapter = $repository->getAdapter();
         parent::__construct(
-            $repository->getEntityDescriptor()->getTableName()
+            $repository->getEntityDescriptor()->getTableName(),
+            $repository->getEntityDescriptor()->getTableName().'.*'
         );
     }
 
@@ -60,9 +61,17 @@ class QueryObject extends Select implements QueryObjectInterface
             ->get($cid, false);
 
         if (false === $collection) {
+            $this->triggerBeforeSelect(
+                $this,
+                $this->getRepository()->getEntityDescriptor()
+            );
             $data = $this->adapter->query($this, $this->getParameters());
             $collection = $this->repository->getEntityMapper()
                 ->createFrom($data);
+            $this->triggerAfterSelect(
+                $data,
+                $collection
+            );
             $this->repository->getCollectionsMap()->set($cid, $collection);
             $this->updateIdentityMap($collection);
         }

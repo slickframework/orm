@@ -216,25 +216,6 @@ final class Orm
     }
 
     /**
-     * Creates a repository for provided entity class name
-     *
-     * @param string $entityClass
-     * @return EntityRepository
-     */
-    private function createRepository($entityClass)
-    {
-        $repository = new EntityRepository();
-        $repository->setAdapter(
-            $this->adapters->get($this->getAdapterAlias($entityClass))
-        )
-            ->setEntityMapper($this->getMapperFor($entityClass))
-            ->setEntityDescriptor(EntityDescriptorRegistry::getInstance()
-                ->getDescriptorFor($entityClass));
-        $this->repositories->set($entityClass, $repository);
-        return $repository;
-    }
-
-    /**
      * Retrieves the mapper for provided entity
      *
      * If mapper does not exists it will be created and stored in the
@@ -287,6 +268,25 @@ final class Orm
     {
         $this->adapters->set($alias, $adapter);
         return $this;
+    }
+
+    /**
+     * Creates a repository for provided entity class name
+     *
+     * @param string $entityClass
+     * @return EntityRepository
+     */
+    private function createRepository($entityClass)
+    {
+        $repository = new EntityRepository();
+        $repository->setAdapter(
+            $this->adapters->get($this->getAdapterAlias($entityClass))
+        )
+            ->setEntityMapper($this->getMapperFor($entityClass))
+            ->setEntityDescriptor(EntityDescriptorRegistry::getInstance()
+                ->getDescriptorFor($entityClass));
+        $this->repositories->set($entityClass, $repository);
+        return $repository;
     }
 
     /**

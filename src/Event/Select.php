@@ -9,6 +9,9 @@
 namespace Slick\Orm\Event;
 
 
+use Slick\Database\RecordList;
+use Slick\Orm\Entity\EntityCollection;
+
 class Select extends AbstractEvent implements EventInterface
 {
 
@@ -24,4 +27,34 @@ class Select extends AbstractEvent implements EventInterface
      * @var string
      */
     protected $action = self::ACTION_BEFORE_SELECT;
+
+    /**
+     * Gets select query
+     *
+     * @return \Slick\Database\Sql\Select
+     */
+    public function getQuery()
+    {
+        return $this->params['query'];
+    }
+
+    /**
+     * Gets data returned from query
+     *
+     * @return RecordList|null
+     */
+    public function getData()
+    {
+        return $this->params['data'];
+    }
+
+    /**
+     * Gets already mapped entity collection
+     *
+     * @return EntityCollection
+     */
+    public function getEntityCollection()
+    {
+        return $this->params['entityCollection'];
+    }
 }

@@ -14,6 +14,7 @@ use Slick\Common\Utils\Text;
 use Slick\Orm\Annotations\Column;
 use Slick\Orm\Descriptor\Field\FieldDescriptor;
 use Slick\Orm\Descriptor\Field\FieldsCollection;
+use Slick\Orm\Mapper\Relation\BelongsTo;
 
 /**
  * Entity Descriptor
@@ -55,6 +56,15 @@ class EntityDescriptor implements EntityDescriptorInterface
     protected $adapterAlias = '__undefined__';
 
     /**
+     * @var RelationsMap
+     */
+    protected $relationsMap;
+
+    protected static $knownRelations = [
+        'belongsTo' => BelongsTo::class
+    ];
+
+    /**
      * EntityDescriptor need an entity FQ class name.
      *
      * @param string $entity
@@ -65,6 +75,7 @@ class EntityDescriptor implements EntityDescriptorInterface
             ? get_class($entity)
             : $entity;
         $this->inspector = Inspector::forClass($entity);
+        $this->createEntityRelationsMap();
     }
 
     /**
@@ -204,5 +215,32 @@ class EntityDescriptor implements EntityDescriptorInterface
     public function className()
     {
         return $this->entity;
+    }
+
+    private function createEntityRelationsMap()
+    {
+        $properties = $this->inspector->getClassProperties();
+        $this->relationsMap = new RelationsMap();
+        foreach ($properties as $property) {
+            $this->checkRelation($property);
+        }
+    }
+
+    private function checkRelation($property)
+    {
+        $annotations = $this->inspector->getPropertyAnnotations($property);
+        foreach (static::$knownRelations as $knownRelation => $class) {
+            if ($annotations->hasAnnotation($knownRelation)) {
+                $relation = new $class(
+                    [
+                        'property' => $property,
+                        'entityDescriptor' => $this,
+                        'annotation' => $annotations->getAnnotation($knownRelation)
+                    ]
+                );
+                $this->relationsMap->set($property, $relation);
+                break;
+            }
+        }
     }
 }

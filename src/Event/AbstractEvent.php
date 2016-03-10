@@ -39,7 +39,7 @@ abstract class AbstractEvent extends LeagueAbstractEvent implements EventInterfa
     /**
      * @var mixed
      */
-    protected $params;
+    public $params;
 
     /**
      * All ORM events are from entities

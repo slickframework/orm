@@ -57,7 +57,7 @@ trait SelectEventTriggers
      * Emits the after select event
      *
      * @param RecordList $data
-     * @param EntityCollection $entity
+     * @param EntityCollection $entities
      *
      * @return \League\Event\EventInterface|string
      */
