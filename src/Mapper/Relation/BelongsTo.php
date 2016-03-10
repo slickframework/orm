@@ -9,11 +9,9 @@
 
 namespace Slick\Orm\Mapper\Relation;
 
-use Slick\Common\Base;
-use Slick\Common\Utils\Text;
-use Slick\Orm\Descriptor\EntityDescriptorInterface;
-use Slick\Orm\Descriptor\EntityDescriptorRegistry;
 use Slick\Orm\Descriptor\Field\FieldDescriptor;
+use Slick\Orm\Entity\EntityCollection;
+use Slick\Orm\EntityInterface;
 use Slick\Orm\Event\Select;
 use Slick\Orm\Mapper\RelationInterface;
 use Slick\Orm\Orm;
@@ -24,39 +22,18 @@ use Slick\Orm\Orm;
  * @package Slick\Orm\Mapper\Relation
  * @author  Filipe Silva <silvam.filipe@gmail.com>
  */
-class BelongsTo extends Base implements RelationInterface
+class BelongsTo extends AbstractRelation implements RelationInterface
 {
+    /**
+     * Relations utility methods
+     */
+    use RelationsUtilityMethods;
 
     /**
-     * @readwrite
-     * @var string
+     * BelongsTo relation
+     *
+     * @param array|object $options The parameters from annotation
      */
-    protected $property;
-
-    /**
-     * @readwrite
-     * @var EntityDescriptorInterface
-     */
-    protected $entityDescriptor;
-
-    /**
-     * @readwrite
-     * @var string
-     */
-    protected $parentEntity;
-
-    /**
-     * @readwrite
-     * @var EntityDescriptorInterface
-     */
-    protected $parentEntityDescriptor;
-
-    /**
-     * @readwrite
-     * @var string
-     */
-    protected $foreignKey;
-
     public function __construct($options)
     {
         /** @var \Slick\Orm\Annotations\BelongsTo $annotation */
@@ -64,71 +41,41 @@ class BelongsTo extends Base implements RelationInterface
         unset($options['annotation']);
         $options['foreignKey'] = $annotation->getParameter('foreignKey');
         $options['parentEntity'] = $annotation->getValue();
+
         parent::__construct($options);
 
         $this->registerListeners();
     }
 
     /**
-     * Sets the parent entity descriptor object
+     * Handles the before select callback
      *
-     * @return EntityDescriptorInterface
+     * @param Select $event
      */
-    public function getParentEntityDescriptor()
-    {
-        if (is_null($this->parentEntityDescriptor)) {
-            $this->setParentEntityDescriptor(
-                EntityDescriptorRegistry::getInstance()
-                    ->getDescriptorFor($this->parentEntity)
-            );
-        }
-        return $this->parentEntityDescriptor;
-    }
-
-    /**
-     * Gets foreign key name
-     *
-     * @return string
-     */
-    public function getForeignKey()
-    {
-        if (is_null($this->foreignKey)) {
-            $name = $this->getParentEntityDescriptor()->getTableName();
-            $name = Text::singular(strtolower($name));
-            $this->foreignKey = "{$name}_id";
-        }
-        return $this->foreignKey;
-    }
-
-    /**
-     * Sets parent entity descriptor
-     *
-     * @param EntityDescriptorInterface $parentEntityDescriptor
-     * @return BelongsTo
-     */
-    public function setParentEntityDescriptor
-    (EntityDescriptorInterface $parentEntityDescriptor
-    ) {
-        $this->parentEntityDescriptor = $parentEntityDescriptor;
-        return $this;
-    }
-
     public function beforeSelect(Select $event)
     {
         $fields = $this->getFieldsPrefixed();
         $table = $this->entityDescriptor->getTableName();
-        $relateTable = $this->getParentEntityDescriptor()->getTableName();
-        $pmk = $this->getParentEntityDescriptor()->getPrimaryKey()->getField();
-        $onClause = "{$table}.{$this->getForeignKey()} = {$relateTable}.{$pmk}";
+        $relateTable = $this->getParentTableName();
+        $pmk = $this->getParentPrimaryKey();
+
+        $onClause = "{$table}.{$this->getForeignKey()} = ".
+            "{$relateTable}.{$pmk}";
+
         $query = $event->getQuery();
         $query->join($relateTable, $onClause, $fields, $relateTable);
     }
 
+    /**
+     * Handles the after select callback
+     *
+     * @param Select $event
+     */
     public function afterSelect(Select $event)
     {
         foreach ($event->getEntityCollection() as $index => $entity) {
             $row = $event->getData()[$index];
-            $entity->{$this->property} = $this->map($row);
+            $entity->{$this->propertyName} = $this->getFromMap($row);
         }
     }
 
@@ -157,33 +104,70 @@ class BelongsTo extends Base implements RelationInterface
      */
     private function getFieldsPrefixed()
     {
-        $fields = $this->getParentEntityDescriptor()->getFields();
-        $table = $this->getParentEntityDescriptor()->getTableName();
+        $table = $this->getParentTableName();
         $data = [];
-        /** @var FieldDescriptor $field */
-        foreach ($fields as $field) {
+
+        foreach ($this->getParentFields() as $field) {
             $data[] = "{$field->getField()} AS ".
                 "{$table}_{$field->getField()}";
         }
         return $data;
     }
 
+    /**
+     * Check if entity is already loaded and uses it.
+     *
+     * If not loaded the entity will be created and loaded to the repository's
+     * identity map so that it can be reused next time.
+     *
+     * @param array $dataRow
+     *
+     * @return null|EntityCollection|EntityInterface|EntityInterface[]
+     */
+    private function getFromMap($dataRow)
+    {
+        $entity = $this->getParentRepository()
+            ->getIdentityMap()
+            ->get($dataRow[$this->getForeignKey()], false);
+        if (false === $entity) {
+            $entity = $this->map($dataRow);
+        }
+        return $entity;
+    }
+
+    /**
+     * Creates and maps related entity
+     *
+     * @param array $dataRow
+     *
+     * @return null|EntityCollection|EntityInterface|EntityInterface[]
+     */
     private function map($dataRow)
     {
-        $relateTable = $this->getParentEntityDescriptor()->getTableName();
-        $regexp = "/{$relateTable}_(?P<name>.+)/i";
+        $data = $this->getData($dataRow);
+        $pmk = $this->getParentPrimaryKey();
+        return (isset($data[$pmk]) && $data[$pmk])
+            ? $this->getParentEntityMapper()->createFrom($data)
+            : null;
+    }
+
+    /**
+     * Gets a data array with fields and values for parent entity creation
+     *
+     * @param array $dataRow
+     *
+     * @return array
+     */
+    private function getData($dataRow)
+    {
         $data = [];
-        $pmk = $this->getParentEntityDescriptor()->getPrimaryKey()->getField();
+        $relateTable = $this->getParentTableName();
+        $regexp = "/{$relateTable}_(?P<name>.+)/i";
         foreach ($dataRow as $field => $value) {
             if (preg_match($regexp, $field, $matched)) {
                 $data[$matched['name']] = $value;
             }
         }
-        return (isset($data[$pmk]) && $data[$pmk])
-            ? Orm::getRepository($this->parentEntity)
-                ->getEntityMapper()
-                ->createFrom($data)
-            : null;
+        return $data;
     }
-
 }

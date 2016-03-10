@@ -9,6 +9,8 @@
 
 namespace Slick\Orm\Mapper;
 
+use Slick\Orm\Descriptor\EntityDescriptorInterface;
+
 /**
  * RelationInterface defines a relation between two entities
  *
@@ -18,4 +20,39 @@ namespace Slick\Orm\Mapper;
 interface RelationInterface
 {
 
+    /**
+     * Returns the property holding the relation
+     *
+     * @return string
+     */
+    public function getPropertyName();
+
+
+    /**
+     * Gets the entity descriptor
+     *
+     * @return EntityDescriptorInterface
+     */
+    public function getEntityDescriptor();
+
+    /**
+     * Gets parent entity class name
+     *
+     * @return string
+     */
+    public function getParentEntity();
+
+    /**
+     * Gets the parent or related entity descriptor
+     *
+     * @return EntityDescriptorInterface
+     */
+    public function getParentEntityDescriptor();
+
+    /**
+     * Gets the foreign key field name
+     *
+     * @return string
+     */
+    public function getForeignKey();
 }

@@ -233,7 +233,7 @@ class EntityDescriptor implements EntityDescriptorInterface
             if ($annotations->hasAnnotation($knownRelation)) {
                 $relation = new $class(
                     [
-                        'property' => $property,
+                        'propertyName' => $property,
                         'entityDescriptor' => $this,
                         'annotation' => $annotations->getAnnotation($knownRelation)
                     ]
