@@ -13,6 +13,8 @@ use PHPUnit_Framework_TestCase as TestCase;
 use Slick\Orm\Descriptor\EntityDescriptor;
 use Slick\Orm\Descriptor\Field\FieldDescriptor;
 use Slick\Orm\Descriptor\Field\FieldsCollection;
+use Slick\Orm\Mapper\Relation\AbstractRelation;
+use Slick\Orm\Mapper\RelationInterface;
 
 /**
  * Entity Descriptor test case
@@ -22,6 +24,12 @@ use Slick\Orm\Descriptor\Field\FieldsCollection;
  */
 class EntityDescriptorTest extends TestCase
 {
+
+    protected function setUp()
+    {
+        parent::setUp();
+        EntityDescriptor::addRelation('MyRelation', TestRelation::class);
+    }
 
     public function names()
     {
@@ -109,4 +117,36 @@ class EntityDescriptorTest extends TestCase
         $descriptor = new EntityDescriptor($entity);
         $this->assertEquals($entity, $descriptor->className());
     }
+
+    /**
+     * @test
+     */
+    public function checkRelation()
+    {
+        $entity = Person::class;
+        $descriptor = new EntityDescriptor($entity);
+        $rel = $descriptor->getRelationsMap()->get('testRelation');
+        $this->assertInstanceOf(TestRelation::class, $rel);
+    }
+
+    /**
+     * Should throw an exception
+     * @test
+     * @expectedException \Slick\Orm\Exception\InvalidArgumentException
+     */
+    public function addInvalidRelation()
+    {
+        EntityDescriptor::addRelation('test', 'stdClass');
+    }
+}
+
+
+class TestRelation extends AbstractRelation implements RelationInterface
+{
+
+    /**
+     * @write
+     * @var string
+     */
+    protected $annotation;
 }

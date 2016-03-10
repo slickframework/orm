@@ -43,6 +43,13 @@ class Person extends Entity implements EntityInterface
      */
     public $other;
 
+    /**
+     * @readwrite
+     * @MyRelation
+     * @var string
+     */
+    public $testRelation;
+
     public function getId()
     {
         return $this->id;

@@ -14,7 +14,9 @@ use Slick\Common\Utils\Text;
 use Slick\Orm\Annotations\Column;
 use Slick\Orm\Descriptor\Field\FieldDescriptor;
 use Slick\Orm\Descriptor\Field\FieldsCollection;
+use Slick\Orm\Exception\InvalidArgumentException;
 use Slick\Orm\Mapper\Relation\BelongsTo;
+use Slick\Orm\Mapper\RelationInterface;
 
 /**
  * Entity Descriptor
@@ -127,6 +129,25 @@ class EntityDescriptor implements EntityDescriptorInterface
     }
 
     /**
+     * Adds a relation class to the list of known relation classes
+     *
+     * @param string $annotationName The annotation name to map
+     * @param string $relationClass  The FQ relation class name
+     *
+     * @throws InvalidArgumentException If the provided class does not implements
+     *      the RelationInterface interface.
+     */
+    public static function addRelation($annotationName, $relationClass)
+    {
+        if (!is_subclass_of($relationClass, RelationInterface::class)) {
+            throw new InvalidArgumentException(
+                "'{$relationClass}' is not a RelationInterface class."
+            );
+        }
+        static::$knownRelations[$annotationName] = $relationClass;
+    }
+
+    /**
      * Determines the table name for current entity
      *
      * If there is an annotation @table present it will be used
@@ -215,6 +236,16 @@ class EntityDescriptor implements EntityDescriptorInterface
     public function className()
     {
         return $this->entity;
+    }
+
+    /**
+     * Gets relations map for this entity
+     *
+     * @return RelationsMap
+     */
+    public function getRelationsMap()
+    {
+        return $this->relationsMap;
     }
 
     private function createEntityRelationsMap()
