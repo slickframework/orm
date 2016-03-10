@@ -46,7 +46,9 @@ class EntityRepository extends AbstractRepository implements
      */
     public function get($entityId)
     {
-        $entity = $this->getIdentityMap()->get($entityId, false);
+        $key = $this->getEntityDescriptor()->className();
+        $key .= '::'.$entityId;
+        $entity = $this->getIdentityMap()->get($key, false);
         if ($entity === false) {
             $entity = $this->load($entityId);
         }

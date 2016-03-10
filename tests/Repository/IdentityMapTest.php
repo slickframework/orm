@@ -67,7 +67,7 @@ class IdentityMapTest extends TestCase
         $storage = $this->getCacheStorageMock();
         $storage->expects($this->once())
             ->method('set')
-            ->with('1', $person)
+            ->with('Slick\Tests\Orm\Descriptor\Person::1', $person)
             ->willReturn($this->returnSelf());
         $this->idMap->setCache($storage);
         $this->assertSame($this->idMap, $this->idMap->set($person));
@@ -98,7 +98,7 @@ class IdentityMapTest extends TestCase
         $storage = $this->getCacheStorageMock();
         $storage->expects($this->once())
             ->method('erase')
-            ->with($person->getId())
+            ->with('Slick\Tests\Orm\Descriptor\Person::'.$person->getId())
             ->willReturn($this->returnSelf());
         $this->idMap->setCache($storage);
         $this->assertSame($this->idMap, $this->idMap->remove($person));

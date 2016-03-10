@@ -64,7 +64,7 @@ class EntityRepositoryTest extends TestCase
         $idMap = $this->getMocked(IdentityMapInterface::class);
         $idMap->expects($this->once())
             ->method('get')
-            ->with($id)
+            ->with('Slick\Tests\Orm\Descriptor\Person::'.$id)
             ->willReturn($person);
         $this->repository->setIdentityMap($idMap);
         $this->assertSame($person, $this->repository->get($id));

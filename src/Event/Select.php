@@ -15,8 +15,8 @@ use Slick\Orm\Entity\EntityCollection;
 class Select extends AbstractEvent implements EventInterface
 {
 
-    const ACTION_BEFORE_SELECT = 'before.insert';
-    const ACTION_AFTER_SELECT  = 'after.insert';
+    const ACTION_BEFORE_SELECT = 'before.select';
+    const ACTION_AFTER_SELECT  = 'after.select';
 
     /**
      * @var string

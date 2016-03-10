@@ -173,14 +173,17 @@ class BelongsTo extends Base implements RelationInterface
         $relateTable = $this->getParentEntityDescriptor()->getTableName();
         $regexp = "/{$relateTable}_(?P<name>.+)/i";
         $data = [];
+        $pmk = $this->getParentEntityDescriptor()->getPrimaryKey()->getField();
         foreach ($dataRow as $field => $value) {
             if (preg_match($regexp, $field, $matched)) {
                 $data[$matched['name']] = $value;
             }
         }
-        return Orm::getRepository($this->parentEntity)
-            ->getEntityMapper()
-            ->createFrom($data);
+        return (isset($data[$pmk]) && $data[$pmk])
+            ? Orm::getRepository($this->parentEntity)
+                ->getEntityMapper()
+                ->createFrom($data)
+            : null;
     }
 
 }

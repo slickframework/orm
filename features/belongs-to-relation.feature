@@ -19,3 +19,9 @@
     And I get entity with id "1"
     When I retrieve entity "person" property
     Then property should be an instance of "Domain\Person"
+
+  Scenario: Retrieving an orphan entity
+    Given I get a repository for "Domain\Profile"
+    And I get entity with id "2"
+    When I retrieve entity "person" property
+    Then property should be null

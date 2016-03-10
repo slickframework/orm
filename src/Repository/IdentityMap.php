@@ -38,7 +38,8 @@ class IdentityMap implements IdentityMapInterface
      */
     public function set(EntityInterface $entity)
     {
-        $this->getCache()->set($entity->getId(), $entity);
+        $key = get_class($entity).'::'.$entity->getId();
+        $this->getCache()->set($key, $entity);
         return $this;
     }
 
@@ -66,7 +67,8 @@ class IdentityMap implements IdentityMapInterface
      */
     public function remove($entity)
     {
-        $this->getCache()->erase($entity->getId());
+        $key = get_class($entity).'::'.$entity->getId();
+        $this->getCache()->erase($key);
         return $this;
     }
 

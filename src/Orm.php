@@ -187,8 +187,9 @@ final class Orm
         $className = is_object($entityClass)
             ? get_class($entityClass)
             : $entityClass;
-        return $this->getEmitterFor($className)
+        $emitter =  $this->getEmitterFor($className)
             ->addListener($event, $listener, $priority);
+        return $emitter;
     }
 
     /**
@@ -240,9 +241,10 @@ final class Orm
      */
     public function getEmitterFor($entity)
     {
-        return $this->emitters->containsKey($entity)
+        $emitter = $this->emitters->containsKey($entity)
             ? $this->emitters->get($entity)
             : $this->createEmitter($entity);
+        return $emitter;
     }
 
     /**

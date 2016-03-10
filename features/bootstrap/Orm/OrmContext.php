@@ -320,4 +320,12 @@ class OrmContext extends \AbstractContext implements
     {
         $this->selectedValue = $this->entity->$property;
     }
+
+    /**
+     * @Then /^property should be null$/
+     */
+    public function propertyShouldBeNull()
+    {
+        Assert::assertNull($this->selectedValue);
+    }
 }
