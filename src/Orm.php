@@ -174,7 +174,7 @@ final class Orm
      * an optional third parameter specifying the priority as an integer. You
      * may use one of EmitterInterface predefined constants here if you want.
      *
-     * @param string|EntityInterface     $entityClass
+     * @param string|EntityInterface     $object
      * @param string                     $event
      * @param ListenerInterface|callable $listener
      * @param int                        $priority
@@ -182,11 +182,9 @@ final class Orm
      * @return EmitterInterface
      */
     public function addListenerFor(
-        $entityClass, $event, $listener, $priority = EmitterInterface::P_NORMAL
+        $object, $event, $listener, $priority = EmitterInterface::P_NORMAL
     ) {
-        $className = is_object($entityClass)
-            ? get_class($entityClass)
-            : $entityClass;
+        $className = is_object($object) ? get_class($object) : $object;
         $emitter =  $this->getEmitterFor($className)
             ->addListener($event, $listener, $priority);
         return $emitter;

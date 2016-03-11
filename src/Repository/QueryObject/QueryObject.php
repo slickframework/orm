@@ -110,9 +110,7 @@ class QueryObject extends Select implements QueryObjectInterface
             $this->updateIdentityMap($collection);
         }
 
-        return $collection->isEmpty()
-            ? null
-            : $collection[0];
+        return $collection->isEmpty() ? null : $collection[0];
     }
 
     /**

@@ -10,6 +10,8 @@
 namespace Slick\Orm\Mapper;
 
 use Slick\Orm\Descriptor\EntityDescriptorInterface;
+use Slick\Orm\Entity\EntityCollection;
+use Slick\Orm\EntityInterface;
 
 /**
  * RelationInterface defines a relation between two entities
@@ -55,4 +57,13 @@ interface RelationInterface
      * @return string
      */
     public function getForeignKey();
+
+    /**
+     * Loads the entity or entity collection for this relation
+     *
+     * @param EntityInterface $entity
+     *
+     * @return null|EntityInterface|EntityCollection|EntityInterface[]
+     */
+    public function load(EntityInterface $entity);
 }

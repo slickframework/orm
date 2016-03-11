@@ -13,6 +13,8 @@ use PHPUnit_Framework_TestCase as TestCase;
 use Slick\Orm\Descriptor\EntityDescriptor;
 use Slick\Orm\Descriptor\Field\FieldDescriptor;
 use Slick\Orm\Descriptor\Field\FieldsCollection;
+use Slick\Orm\Entity\EntityCollection;
+use Slick\Orm\EntityInterface;
 use Slick\Orm\Mapper\Relation\AbstractRelation;
 use Slick\Orm\Mapper\RelationInterface;
 
@@ -149,4 +151,16 @@ class TestRelation extends AbstractRelation implements RelationInterface
      * @var string
      */
     protected $annotation;
+
+    /**
+     * Loads the entity or entity collection for this relation
+     *
+     * @param EntityInterface $entity
+     *
+     * @return null|EntityInterface|EntityCollection|EntityInterface[]
+     */
+    public function load(EntityInterface $entity)
+    {
+        return null;
+    }
 }

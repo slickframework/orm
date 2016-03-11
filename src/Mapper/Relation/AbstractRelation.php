@@ -13,6 +13,9 @@ use Slick\Common\Base;
 use Slick\Common\Utils\Text;
 use Slick\Orm\Descriptor\EntityDescriptorInterface;
 use Slick\Orm\Descriptor\EntityDescriptorRegistry;
+use Slick\Orm\Entity\EntityCollection;
+use Slick\Orm\EntityInterface;
+use Slick\Orm\Orm;
 
 /**
  * AbstractRelation
@@ -138,5 +141,27 @@ abstract class AbstractRelation extends Base
             $this->foreignKey = "{$name}_id";
         }
         return $this->foreignKey;
+    }
+
+    /**
+     * Register the retrieved entities in the repository identity map
+     *
+     * @param EntityInterface|EntityCollection $entity
+     *
+     * @return EntityInterface|EntityCollection
+     */
+    protected function registerEntity($entity)
+    {
+        if ($entity instanceof EntityCollection) {
+            foreach ($entity as $item) {
+                $this->registerEntity($item);
+            }
+        }
+
+        Orm::getRepository($this->getParentEntity())
+            ->getIdentityMap()
+            ->set($entity);
+
+        return $entity;
     }
 }

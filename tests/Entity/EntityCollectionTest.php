@@ -41,22 +41,10 @@ class EntityCollectionTest extends TestCase
      */
     public function acceptOnlyEntities()
     {
-        if (version_compare(PHP_VERSION, '7.0.0') >= 0) {
-            $this->markTestSkipped('Type check not necessary here.');
-        }
         $this->assertSame(
             $this->entities,
             $this->entities->add(new Person(['id' => 2]))
         );
-
-        try {
-            $this->entities[] = new \stdClass();
-            $this->fail(
-                'EntityCollection can only accept EntityInterface objects.'
-            );
-        } catch (\Exception $caught) {
-
-        }
     }
 
     /**

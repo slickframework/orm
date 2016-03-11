@@ -158,7 +158,7 @@ class EntityMapper extends AbstractEntityMapper implements
         if ($data instanceof RecordList) {
             return $this->createMultiple($data);
         }
-        return $this->createSingle($data);
+        return null == $data ? null : $this->createSingle($data);
     }
 
     /**

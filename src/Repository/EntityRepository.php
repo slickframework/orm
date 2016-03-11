@@ -68,14 +68,11 @@ class EntityRepository extends AbstractRepository implements
         $primaryKey = $this->getEntityDescriptor()
             ->getPrimaryKey()
             ->getField();
+
         return $this->find()
-            ->where(
-                [
-                    "{$table}.{$primaryKey} = :id" => [
-                        ':id' => $entityId
-                    ]
-                ]
-            )
+            ->where([
+                "{$table}.{$primaryKey} = :id" => [':id' => $entityId]
+            ])
             ->first();
     }
 }

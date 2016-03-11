@@ -9,7 +9,7 @@
 
 namespace Slick\Orm\Mapper\Relation;
 
-use Slick\Orm\Descriptor\Field\FieldDescriptor;
+use Slick\Database\Sql;
 use Slick\Orm\Entity\EntityCollection;
 use Slick\Orm\EntityInterface;
 use Slick\Orm\Event\Select;
@@ -146,9 +146,10 @@ class BelongsTo extends AbstractRelation implements RelationInterface
     {
         $data = $this->getData($dataRow);
         $pmk = $this->getParentPrimaryKey();
-        return (isset($data[$pmk]) && $data[$pmk])
+        $entity = (isset($data[$pmk]) && $data[$pmk])
             ? $this->getParentEntityMapper()->createFrom($data)
             : null;
+        return null == $entity ? null : $this->registerEntity($entity);
     }
 
     /**
@@ -169,5 +170,40 @@ class BelongsTo extends AbstractRelation implements RelationInterface
             }
         }
         return $data;
+    }
+
+    /**
+     * Loads the entity or entity collection for this relation
+     *
+     * @param EntityInterface $entity
+     *
+     * @return null|EntityInterface
+     */
+    public function load(EntityInterface $entity)
+    {
+        $adapter = Orm::getRepository(get_class($entity))
+            ->getAdapter();
+
+        $relTable = $this->getParentTableName();
+        $relPmk = $this->getParentPrimaryKey();
+
+        $table = $this->getEntityDescriptor()->getTableName();
+        $pmk = $this->getEntityDescriptor()->getPrimaryKey();
+        $fnk = $this->getForeignKey();
+
+        $onClause = "{$relTable}.{$relPmk} = {$table}.{$fnk}";
+
+        $data = Sql::createSql($adapter)
+            ->select($relTable)
+            ->join($table, $onClause, null)
+            ->where([
+                "{$table}.{$pmk->getField()} = :id" => [
+                    ':id' => $entity->{$pmk->getName()}
+                ]
+            ])
+            ->first();
+        $relEntity = $this->getParentEntityMapper()->createFrom($data);
+
+        return null == $relEntity ? null :$this->registerEntity($relEntity);
     }
 }
