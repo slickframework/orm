@@ -181,8 +181,7 @@ class BelongsTo extends AbstractRelation implements RelationInterface
      */
     public function load(EntityInterface $entity)
     {
-        $adapter = Orm::getRepository(get_class($entity))
-            ->getAdapter();
+        $adapter = $this->getAdapter();
 
         $relTable = $this->getParentTableName();
         $relPmk = $this->getParentPrimaryKey();
@@ -202,6 +201,7 @@ class BelongsTo extends AbstractRelation implements RelationInterface
                 ]
             ])
             ->first();
+
         $relEntity = $this->getParentEntityMapper()->createFrom($data);
 
         return null == $relEntity ? null :$this->registerEntity($relEntity);

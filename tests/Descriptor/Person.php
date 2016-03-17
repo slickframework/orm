@@ -50,6 +50,12 @@ class Person extends Entity implements EntityInterface
      */
     public $testRelation;
 
+    /**
+     * @readwrite
+     * @var string
+     */
+    protected $profile;
+
     public function getId()
     {
         return $this->id;

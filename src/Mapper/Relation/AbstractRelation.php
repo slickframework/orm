@@ -11,6 +11,7 @@ namespace Slick\Orm\Mapper\Relation;
 
 use Slick\Common\Base;
 use Slick\Common\Utils\Text;
+use Slick\Database\Adapter\AdapterInterface;
 use Slick\Orm\Descriptor\EntityDescriptorInterface;
 use Slick\Orm\Descriptor\EntityDescriptorRegistry;
 use Slick\Orm\Entity\EntityCollection;
@@ -22,6 +23,8 @@ use Slick\Orm\Orm;
  *
  * @package Slick\Orm\Mapper\Relation
  * @author  Filipe Silva <silvam.filipe@gmail.com>
+ *
+ * @property AdapterInterface $adapter
  */
 abstract class AbstractRelation extends Base
 {
@@ -55,6 +58,12 @@ abstract class AbstractRelation extends Base
      * @var string
      */
     protected $foreignKey;
+
+    /**
+     * @readwrite
+     * @var AdapterInterface
+     */
+    protected $adapter;
 
     /**
      * Returns the property holding the relation
@@ -163,5 +172,32 @@ abstract class AbstractRelation extends Base
             ->set($entity);
 
         return $entity;
+    }
+
+    /**
+     * Set the database adapter for this relation
+     *
+     * @param AdapterInterface $adapter
+     * @return $this|self|AbstractRelation
+     */
+    public function setAdapter(AdapterInterface $adapter)
+    {
+        $this->adapter = $adapter;
+        return $this;
+    }
+
+    /**
+     * Gets relation adapter
+     *
+     * @return AdapterInterface
+     */
+    public function getAdapter()
+    {
+        if (null == $this->adapter) {
+            $className = $this->getEntityDescriptor()->className();
+            $repository = Orm::getRepository($className);
+            $this->setAdapter($repository->getAdapter());
+        }
+        return $this->adapter;
     }
 }

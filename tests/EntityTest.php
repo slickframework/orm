@@ -12,8 +12,10 @@ namespace Slick\Tests\Orm;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use PHPUnit_Framework_TestCase as TestCase;
 use Slick\Database\Adapter\AdapterInterface;
+use Slick\Orm\Descriptor\EntityDescriptorRegistry;
 use Slick\Orm\Entity;
 use Slick\Orm\EntityMapperInterface;
+use Slick\Orm\Mapper\RelationInterface;
 use Slick\Orm\Orm;
 use Slick\Tests\Orm\Descriptor\Person;
 
@@ -80,6 +82,32 @@ class EntityTest extends TestCase
         $mike = new Person(['name' => 'Mike']);
         $mapper = $mike->getMapper();
         $this->assertInstanceOf(EntityMapperInterface::class, $mapper);
+    }
+
+    /**
+     * Should check if null and call relation to be loaded
+     * @test
+     */
+    public function lazyLoadProperty()
+    {
+        $class = RelationInterface::class;
+        $methods = get_class_methods($class);
+        /** @var RelationInterface|MockObject $relation */
+        $relation = $this->getMockBuilder($class)
+            ->setMethods($methods)
+            ->getMock();
+
+        $descriptor = EntityDescriptorRegistry::getInstance()
+            ->getDescriptorFor(Person::class);
+        $descriptor->getRelationsMap()->set('profile', $relation);
+
+        $person = new Person(['id' => '3', 'name' => 'Phil']);
+
+        $relation->expects($this->once())
+            ->method('load')
+            ->with($person)
+            ->willReturn(null);
+        $this->assertNull($person->profile);
     }
 
     /**
