@@ -25,6 +25,9 @@ use Slick\Orm\Orm;
  * @author  Filipe Silva <silvam.filipe@gmail.com>
  *
  * @property AdapterInterface $adapter
+ * @property bool $lazyLoaded
+ *
+ * @method bool isLazyLoaded()
  */
 abstract class AbstractRelation extends Base
 {
@@ -64,6 +67,12 @@ abstract class AbstractRelation extends Base
      * @var AdapterInterface
      */
     protected $adapter;
+
+    /**
+     * @readwrite
+     * @var bool
+     */
+    protected $lazyLoaded = true;
 
     /**
      * Returns the property holding the relation

@@ -28,7 +28,9 @@ class BelongsTo extends OrmAnnotation
      */
     protected $parameters = [
         'className' => null,
-        'foreignKey' => null
+        'foreignKey' => null,
+        'lazyLoaded' => false,
+        'dependent' => true
     ];
 
 }

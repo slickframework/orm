@@ -13,6 +13,9 @@
     Properties:
     - className: FQ entity class name (Mandatory)
     - foreignKey: singular name of table with "_id" suffix. Ex.: person_id
+    - lazyLoaded: it defaults to false. When true entity will be loaded with its parent
+    - dependent: defaults to true. when deleting the parent entity it child will be deleted
+                 False will prevent parent entity to be deleted.
 
   Scenario: Retrieving the Person when loading a Profile
     Given I get a repository for "Domain\Profile"
@@ -25,3 +28,13 @@
     And I get entity with id "2"
     When I retrieve entity "person" property
     Then property should be null
+
+  Scenario: Save entity with related entity set
+    Given I get a repository for "domain\Person"
+    And I get entity with id "2"
+    When I create a profile with:
+      | email             | person|
+      | ana@example.com | 2     |
+    And I save it
+    When I retrieve entity "person" property
+    Then property should be an instance of "Domain\Person"

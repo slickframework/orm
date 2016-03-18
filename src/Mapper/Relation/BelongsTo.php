@@ -12,6 +12,7 @@ namespace Slick\Orm\Mapper\Relation;
 use Slick\Database\Sql;
 use Slick\Orm\Entity\EntityCollection;
 use Slick\Orm\EntityInterface;
+use Slick\Orm\Event\Save;
 use Slick\Orm\Event\Select;
 use Slick\Orm\Mapper\RelationInterface;
 use Slick\Orm\Orm;
@@ -30,6 +31,12 @@ class BelongsTo extends AbstractRelation implements RelationInterface
     use RelationsUtilityMethods;
 
     /**
+     * @readwrite
+     * @var bool
+     */
+    protected $dependent = true;
+
+    /**
      * BelongsTo relation
      *
      * @param array|object $options The parameters from annotation
@@ -41,6 +48,7 @@ class BelongsTo extends AbstractRelation implements RelationInterface
         unset($options['annotation']);
         $options['foreignKey'] = $annotation->getParameter('foreignKey');
         $options['parentEntity'] = $annotation->getValue();
+        $options['lazyLoaded'] = $annotation->getParameter('lazyLoaded');
 
         parent::__construct($options);
 
@@ -54,6 +62,10 @@ class BelongsTo extends AbstractRelation implements RelationInterface
      */
     public function beforeSelect(Select $event)
     {
+        if ($this->isLazyLoaded()) {
+            return;
+        }
+
         $fields = $this->getFieldsPrefixed();
         $table = $this->entityDescriptor->getTableName();
         $relateTable = $this->getParentTableName();
@@ -73,10 +85,25 @@ class BelongsTo extends AbstractRelation implements RelationInterface
      */
     public function afterSelect(Select $event)
     {
+        if ($this->isLazyLoaded()) {
+            return;
+        }
         foreach ($event->getEntityCollection() as $index => $entity) {
             $row = $event->getData()[$index];
             $entity->{$this->propertyName} = $this->getFromMap($row);
         }
+    }
+
+    public function beforeSave(Save $event)
+    {
+        $parent = $event->getEntity()->{$this->propertyName};
+        if ($parent instanceof EntityInterface) {
+            $parent = $parent->getId();
+        }
+        $event->params[$this->getForeignKey()] = $parent;
+        $related = $this->getParentRepository()
+            ->get($parent);
+        $event->getEntity()->{$this->propertyName} = $related;
     }
 
     /**
@@ -94,6 +121,18 @@ class BelongsTo extends AbstractRelation implements RelationInterface
             $this->entityDescriptor->className(),
             Select::ACTION_AFTER_SELECT,
             [$this, 'afterSelect']
+        );
+
+        Orm::addListener(
+            $this->entityDescriptor->className(),
+            Save::ACTION_BEFORE_INSERT,
+            [$this, 'beforeSave']
+        );
+
+        Orm::addListener(
+            $this->entityDescriptor->className(),
+            Save::ACTION_BEFORE_UPDATE,
+            [$this, 'beforeSave']
         );
     }
 

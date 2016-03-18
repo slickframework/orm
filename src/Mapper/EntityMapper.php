@@ -50,7 +50,7 @@ class EntityMapper extends AbstractEntityMapper implements
         $data = $this->getData();
         $save = $this->triggerBeforeSave($query, $entity, $data);
 
-        $query->set($data)
+        $query->set($save->params)
             ->execute();
         $lastId = $query->getAdapter()->getLastInsertId();
         if ($lastId) {

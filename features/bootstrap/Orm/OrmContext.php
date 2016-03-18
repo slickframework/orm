@@ -12,7 +12,9 @@ namespace Orm;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Behat\Tester\Exception\PendingException;
+use Behat\Gherkin\Node\TableNode;
 use Domain\Person;
+use Domain\Profile;
 use PHPUnit_Framework_Assert as Assert;
 use Slick\Database\Adapter;
 use Slick\Database\Adapter\SqliteAdapter;
@@ -327,5 +329,15 @@ class OrmContext extends \AbstractContext implements
     public function propertyShouldBeNull()
     {
         Assert::assertNull($this->selectedValue);
+    }
+
+    /**
+     * @When /^I create a profile with:$/
+     */
+    public function iCreateAProfileWith(TableNode $table)
+    {
+        $this->lastEntity = $this->entity;
+        $hash = $table->getHash();
+        $this->entity = new Profile($hash[0]);
     }
 }

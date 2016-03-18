@@ -16,6 +16,8 @@ use Slick\Database\RecordList;
 use Slick\Database\Sql\Dialect;
 use Slick\Database\Sql\Select;
 use Slick\Orm\Descriptor\EntityDescriptorRegistry;
+use Slick\Orm\Entity\EntityCollection;
+use Slick\Orm\Event\Save;
 use Slick\Orm\Mapper\Relation\BelongsTo;
 use Slick\Tests\Orm\Descriptor\Person;
 use Slick\Tests\Orm\Descriptor\Profile;
@@ -49,13 +51,13 @@ class BelongsToTest extends TestCase
         $this->belongsTo = new BelongsTo(
             [
                 'annotation' => $this->getAnnotation(),
-                'propertyName' => 'profile',
+                'propertyName' => 'person',
                 'entityDescriptor' => EntityDescriptorRegistry::getInstance()
-                    ->getDescriptorFor(Person::class)
+                    ->getDescriptorFor(Profile::class)
             ]
         );
-        EntityDescriptorRegistry::getInstance()->getDescriptorFor(Person::class)
-            ->getRelationsMap()->set('profile', $this->belongsTo);
+        EntityDescriptorRegistry::getInstance()->getDescriptorFor(Profile::class)
+            ->getRelationsMap()->set('person', $this->belongsTo);
     }
 
     /**
@@ -73,7 +75,7 @@ class BelongsToTest extends TestCase
      */
     public function getProperty()
     {
-        $this->assertEquals('profile', $this->belongsTo->getPropertyName());
+        $this->assertEquals('person', $this->belongsTo->getPropertyName());
     }
 
     /**
@@ -82,14 +84,14 @@ class BelongsToTest extends TestCase
      */
     public function loadEntity()
     {
-        $person = New Person(['id' => 2, 'name' => 'John']);
+        $profile = New Profile(['id' => 2, 'email' => 'John@example.com']);
         $adapter = $this->getMockedAdapter();
         $adapter->expects($this->once())
             ->method('query')
             ->with($this->isInstanceOf(Select::class), [':id' => 2])
             ->willReturn(new RecordList());
         $this->belongsTo->setAdapter($adapter);
-        $this->belongsTo->load($person);
+        $this->belongsTo->load($profile);
     }
 
     /**
@@ -106,17 +108,57 @@ class BelongsToTest extends TestCase
         $query->expects($this->once())
             ->method('join')
             ->with(
-                'profiles',
-                'users.profile_id = profiles.id',
+                'users',
+                'profiles.user_id = users.uid',
                 [
-                    'id AS profiles_id',
-                    'email AS profiles_email'
+                    'uid AS users_uid',
+                    'name AS users_name'
                 ],
-                'profiles'
+                'users'
             )
             ->willReturn($this->returnSelf());
         $event = new \Slick\Orm\Event\Select(null, ['query' => $query]);
         $this->belongsTo->beforeSelect($event);
+    }
+
+    /**
+     * Should grab the modified data from raw source and create an entity to
+     * associate to the parent entity
+     * @test
+     */
+    public function afterSelect()
+    {
+        $data = [
+            [
+                'users_uid' => 123,
+                'users_name' => 'Ana',
+                'id' => 1,
+                'email' => 'ana@example.com',
+                'user_id' => 123
+            ]
+        ];
+        $entityCollection = new EntityCollection();
+        $entityCollection->add(new Profile(['id' => 1, 'email' => 'ana@example.com']));
+        $event = new \Slick\Orm\Event\Select(null, ['entityCollection' => $entityCollection, 'data' => $data]);
+        $event->setAction(\Slick\Orm\Event\Select::ACTION_AFTER_SELECT);
+        $this->belongsTo->afterSelect($event);
+        $this->assertInstanceOf(Person::class, $entityCollection[0]->person);
+    }
+
+    public function testLazyLoad()
+    {
+        $this->belongsTo->lazyLoaded = true;
+        $event = new \Slick\Orm\Event\Select();
+        $this->belongsTo->afterSelect($event);
+    }
+
+    public function testSave()
+    {
+        $person = new Person(['id' => '2', 'name' => 'Ana']);
+        $profile = new Profile(['email' => 'ana@axample.com', 'person' => $person]);
+        $event = new Save($profile, ['email' => 'ana@axample.com']);
+        $this->belongsTo->beforeSave($event);
+        $this->assertEquals('2', $event->params['user_id']);
     }
 
     /**
@@ -130,7 +172,7 @@ class BelongsToTest extends TestCase
             $this->annotation = new \Slick\Orm\Annotations\BelongsTo(
                 'BelongsTo',
                 [
-                    Profile::class => true
+                    Person::class => true
                 ]
             );
         }
