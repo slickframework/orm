@@ -10,18 +10,18 @@
 namespace Slick\Orm\Annotations;
 
 /**
- * BelongsTo annotation (many-to-one)
- *
+ * HasOne
+ * 
  * @package Slick\Orm\Annotations
- * @author  Filipe Silva <silam.filipe@gmail.com>
+ * @author  Filipe Silva <silvam.filipe@gmail.com>
  */
-class BelongsTo extends OrmAnnotation
+class HasOne extends OrmAnnotation
 {
 
     /**
      * @var string
      */
-    protected $name = 'belongsTo';
+    protected $name = 'hasOne';
 
     /**
      * @var array
@@ -31,5 +31,4 @@ class BelongsTo extends OrmAnnotation
         'foreignKey' => null,
         'lazyLoaded' => false
     ];
-
 }

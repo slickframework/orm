@@ -1,6 +1,6 @@
 # belongs-to-relation.feature
   Feature: One entity "belongs to" another entity
-    In order to set a "belongs to" relation between to entities
+    In order to set a "belongs to" relation between two entities
     As a developer
     I want to set an annotation "BelongsTo" in a property of an entity marking
       it as a relation property that when called will return the other entity
@@ -33,8 +33,10 @@
     Given I get a repository for "domain\Person"
     And I get entity with id "2"
     When I create a profile with:
-      | email             | person|
+      | email           | person|
       | ana@example.com | 2     |
     And I save it
     When I retrieve entity "person" property
     Then property should be an instance of "Domain\Person"
+    And I delete the entity
+

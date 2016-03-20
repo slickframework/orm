@@ -16,6 +16,7 @@ use Slick\Orm\Descriptor\Field\FieldDescriptor;
 use Slick\Orm\Descriptor\Field\FieldsCollection;
 use Slick\Orm\Exception\InvalidArgumentException;
 use Slick\Orm\Mapper\Relation\BelongsTo;
+use Slick\Orm\Mapper\Relation\HasOne;
 use Slick\Orm\Mapper\RelationInterface;
 
 /**
@@ -63,7 +64,8 @@ class EntityDescriptor implements EntityDescriptorInterface
     protected $relationsMap;
 
     protected static $knownRelations = [
-        'belongsTo' => BelongsTo::class
+        'belongsTo' => BelongsTo::class,
+        'hasOne' => HasOne::class,
     ];
 
     /**

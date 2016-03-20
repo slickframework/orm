@@ -11,6 +11,7 @@ namespace Domain;
 
 use Slick\Orm\Entity;
 use Slick\Orm\Annotations\Column;
+use Slick\Orm\Annotations\HasOne;
 use Slick\Orm\EntityInterface;
 
 /**
@@ -36,6 +37,13 @@ class Person extends Entity
      * @var string
      */
     protected $name;
+
+    /**
+     * @readwrite
+     * @HasOne Domain\Profile
+     * @var Profile
+     */
+    protected $profile;
 
     /**
      * Returns entity ID

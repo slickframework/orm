@@ -109,7 +109,7 @@ class BelongsTo extends AbstractRelation implements RelationInterface
     /**
      * Registers the listener for before select event
      */
-    private function registerListeners()
+    protected function registerListeners()
     {
         Orm::addListener(
             $this->entityDescriptor->className(),
@@ -141,7 +141,7 @@ class BelongsTo extends AbstractRelation implements RelationInterface
      *
      * @return array
      */
-    private function getFieldsPrefixed()
+    protected function getFieldsPrefixed()
     {
         $table = $this->getParentTableName();
         $data = [];
@@ -163,7 +163,7 @@ class BelongsTo extends AbstractRelation implements RelationInterface
      *
      * @return null|EntityCollection|EntityInterface|EntityInterface[]
      */
-    private function getFromMap($dataRow)
+    protected function getFromMap($dataRow)
     {
         $entity = $this->getParentRepository()
             ->getIdentityMap()
@@ -181,7 +181,7 @@ class BelongsTo extends AbstractRelation implements RelationInterface
      *
      * @return null|EntityCollection|EntityInterface|EntityInterface[]
      */
-    private function map($dataRow)
+    protected function map($dataRow)
     {
         $data = $this->getData($dataRow);
         $pmk = $this->getParentPrimaryKey();
@@ -198,7 +198,7 @@ class BelongsTo extends AbstractRelation implements RelationInterface
      *
      * @return array
      */
-    private function getData($dataRow)
+    protected function getData($dataRow)
     {
         $data = [];
         $relateTable = $this->getParentTableName();
