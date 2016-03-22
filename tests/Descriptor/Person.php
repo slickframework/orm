@@ -52,6 +52,7 @@ class Person extends Entity implements EntityInterface
 
     /**
      * @readwrite
+     * @HasOne Slick\Tests\Orm\Descriptor\Profile
      * @var string
      */
     protected $profile;

@@ -79,6 +79,20 @@ class BelongsToTest extends TestCase
     }
 
     /**
+     * Should do nothing and return
+     * @test
+     */
+    public function beforeSelectLazy()
+    {
+        $query = $this->getQueryMock();
+        $query->expects($this->never())
+            ->method('join');
+        $this->belongsTo->lazyLoaded = true;
+        $event = new \Slick\Orm\Event\Select(null, ['query' => $query]);
+        $this->belongsTo->beforeSelect($event);
+    }
+
+    /**
      * Should load entity from database
      * @test
      */
@@ -100,11 +114,7 @@ class BelongsToTest extends TestCase
      */
     public function beforeSelect()
     {
-        /** @var Select|MockObject $query */
-        $query = $this->getMockBuilder(Select::class)
-            ->setConstructorArgs(['people'])
-            ->setMethods(['join'])
-            ->getMock();
+        $query = $this->getQueryMock();
         $query->expects($this->once())
             ->method('join')
             ->with(
@@ -119,6 +129,21 @@ class BelongsToTest extends TestCase
             ->willReturn($this->returnSelf());
         $event = new \Slick\Orm\Event\Select(null, ['query' => $query]);
         $this->belongsTo->beforeSelect($event);
+    }
+
+    /**
+     * Gets the query object mocked
+     *
+     * @return MockObject|Select
+     */
+    protected function getQueryMock()
+    {
+        /** @var Select|MockObject $query */
+        $query = $this->getMockBuilder(Select::class)
+            ->setConstructorArgs(['people'])
+            ->setMethods(['join'])
+            ->getMock();
+        return $query;
     }
 
     /**
