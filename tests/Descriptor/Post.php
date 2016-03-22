@@ -7,51 +7,48 @@
  * file that was distributed with this source code.
  */
 
-namespace Domain;
+namespace Slick\Tests\Orm\Descriptor;
 
-use Slick\Orm\Entity;
+use Slick\Orm\Annotations\BelongsTo;
 use Slick\Orm\Annotations\Column;
-use Slick\Orm\Annotations\HasMany;
-use Slick\Orm\Annotations\HasOne;
+use Slick\Orm\Entity;
 use Slick\Orm\EntityInterface;
 
 /**
- * Class Person
- * @package Domain
- * @author  Filipe Silva <silvam.filipe@gmail.com>
- *
- * @property integer $uid
- * @property string  $name
+ * Class Post
+ * 
+ * @package Slick\Tests\Orm\Descriptor
  */
-class Person extends Entity
+class Post extends Entity
 {
+
     /**
      * @readwrite
      * @Column type=integer, primaryKey, autoIncrement
      * @var integer
      */
-    protected $uid;
+    protected $id;
 
     /**
      * @readwrite
      * @Column type=text
      * @var string
      */
-    protected $name;
+    protected $title;
 
     /**
      * @readwrite
-     * @HasOne Domain\Profile
-     * @var Profile
+     * @Column type=text
+     * @var string
      */
-    protected $profile;
+    protected $body;
 
     /**
      * @readwrite
-     * @HasMany Domain\Post
-     * @var Post[]|Entity\EntityCollection
+     * @BelongsTo Slick\Tests\Orm\Descriptor\Person
+     * @var Person
      */
-    protected $posts;
+    protected $author;
 
     /**
      * Returns entity ID
@@ -62,7 +59,7 @@ class Person extends Entity
      */
     public function getId()
     {
-        return $this->uid;
+        return $this->id;
     }
 
     /**
@@ -74,7 +71,7 @@ class Person extends Entity
      */
     public function setId($entityId)
     {
-       $this->uid = $entityId;
+        $this->id = $entityId;
         return $this;
     }
 }

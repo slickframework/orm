@@ -340,4 +340,12 @@ class OrmContext extends \AbstractContext implements
         $hash = $table->getHash();
         $this->entity = new Profile($hash[0]);
     }
+
+    /**
+     * @Given /^entity collection should be empty$/
+     */
+    public function entityCollectionShouldBeEmpty()
+    {
+        Assert::assertEmpty($this->selectedValue);
+    }
 }

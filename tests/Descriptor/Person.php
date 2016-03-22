@@ -10,6 +10,7 @@
 namespace Slick\Tests\Orm\Descriptor;
 
 use Slick\Orm\Annotations\Column;
+use Slick\Orm\Annotations\HasMany;
 use Slick\Orm\Entity;
 use Slick\Orm\EntityInterface;
 
@@ -49,6 +50,13 @@ class Person extends Entity implements EntityInterface
      * @var string
      */
     public $testRelation;
+
+    /**
+     * @readwrite
+     * @HasMany Slick\Tests\Orm\Descriptor\Post
+     * @var Post[]|Entity\EntityCollection
+     */
+    protected $posts;
 
     /**
      * @readwrite

@@ -28,7 +28,7 @@ class EntityRepository extends AbstractRepository implements
     /**
      * Finds entities
      *
-     * @return QueryObjectInterface
+     * @return QueryObjectInterface|\Slick\Database\Sql\Select
      *
      * @see Slick\Database\Sql\Select
      */

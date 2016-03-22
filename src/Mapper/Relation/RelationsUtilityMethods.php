@@ -13,6 +13,7 @@ use Slick\Orm\Descriptor\EntityDescriptorInterface;
 use Slick\Orm\Descriptor\Field\FieldDescriptor;
 use Slick\Orm\Descriptor\Field\FieldsCollection;
 use Slick\Orm\Orm;
+use Slick\Orm\RepositoryInterface;
 
 /**
  * Useful methods for relations
@@ -22,6 +23,11 @@ use Slick\Orm\Orm;
  */
 trait RelationsUtilityMethods
 {
+
+    /**
+     * @var RepositoryInterface
+     */
+    protected $parentRepository;
 
     /**
      * Gets the parent or related entity descriptor
@@ -56,7 +62,24 @@ trait RelationsUtilityMethods
      */
     public function getParentRepository()
     {
-        return Orm::getRepository($this->getParentEntity());
+        if (null == $this->parentRepository) {
+            $this->setParentRepository(
+                Orm::getRepository($this->getParentEntity())
+            );
+        }
+        return $this->parentRepository;
+    }
+
+    /**
+     * Sets parent entity repository
+     * 
+     * @param RepositoryInterface $repository
+     * @return $this
+     */
+    public function setParentRepository(RepositoryInterface $repository)
+    {
+        $this->parentRepository = $repository;
+        return $this;
     }
 
     /**
