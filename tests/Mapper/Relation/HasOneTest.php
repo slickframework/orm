@@ -119,7 +119,7 @@ class HasOneTest extends TestCase
     public function afterSelect()
     {
         $ana = new Person(['id' => 2, 'name' => 'Ana']);
-        $entityCollection = new EntityCollection([$ana]);
+        $entityCollection = new EntityCollection(Person::class, [$ana]);
         $select = new \Slick\Orm\Event\Select(
             null,
             [

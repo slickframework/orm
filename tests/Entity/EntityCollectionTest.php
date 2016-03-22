@@ -33,7 +33,7 @@ class EntityCollectionTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->entities = new EntityCollection();
+        $this->entities = new EntityCollection(Person::class);
     }
 
     /**

@@ -162,7 +162,7 @@ class BelongsToTest extends TestCase
                 'user_id' => 123
             ]
         ];
-        $entityCollection = new EntityCollection();
+        $entityCollection = new EntityCollection(Profile::class);
         $entityCollection->add(new Profile(['id' => 1, 'email' => 'ana@example.com']));
         $event = new \Slick\Orm\Event\Select(null, ['entityCollection' => $entityCollection, 'data' => $data]);
         $event->setAction(\Slick\Orm\Event\Select::ACTION_AFTER_SELECT);

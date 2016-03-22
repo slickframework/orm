@@ -192,7 +192,7 @@ class EntityMapper extends AbstractEntityMapper implements
         foreach ($source as $item) {
             $data[] = $this->createSingle($item);
         }
-        return new EntityCollection($data);
+        return new EntityCollection($this->getEntityClassName(), $data);
     }
     
     /**

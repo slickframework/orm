@@ -14,6 +14,7 @@ use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use Slick\Cache\CacheStorageInterface;
 use Slick\Orm\Entity\CollectionsMap;
 use Slick\Orm\Entity\EntityCollection;
+use Slick\Tests\Orm\Descriptor\Person;
 
 /**
  * CollectionsMap test case
@@ -63,7 +64,7 @@ class CollectionsMapTest extends TestCase
      */
     public function setACollection()
     {
-        $collection = new EntityCollection();
+        $collection = new EntityCollection(Person::class);
         $cache = $this->getCacheStorageMock();
         $cache->expects($this->once())
             ->method('set')
@@ -82,7 +83,7 @@ class CollectionsMapTest extends TestCase
      */
     public function getACollection()
     {
-        $collection = new EntityCollection();
+        $collection = new EntityCollection(Person::class);
         $cache = $this->getCacheStorageMock();
         $cache->expects($this->once())
             ->method('get')

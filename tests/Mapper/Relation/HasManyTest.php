@@ -72,7 +72,7 @@ class HasManyTest extends TestCase
 
     public function testLoad()
     {
-        $collection = new EntityCollection();
+        $collection = new EntityCollection(Person::class);
         $entity = new Person(['id' => 1, 'name' => 'test']);
         $query = $this->getQueryObjectMocked(['where', 'all', 'limit']);
         $query->method('all')->willReturn($collection);

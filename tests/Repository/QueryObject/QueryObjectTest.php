@@ -139,10 +139,10 @@ class QueryObjectTest extends TestCase
     public function getFirstMatch()
     {
         $collection = $this->getEntityCollection();
-        $collection = new EntityCollection([$collection[0]]);
+        $collection = new EntityCollection(Person::class, [$collection[0]]);
         // Collections map mocck
         $collectionsMap = $this->getMockedCollectionMap();
-        $collectionsMap->expects($this->once())
+        $collectionsMap->expects($this->atLeastOnce())
             ->method('get')
             ->with('SELECT people.* FROM people LIMIT 1', false)
             ->willReturn(false);
@@ -190,7 +190,7 @@ class QueryObjectTest extends TestCase
      */
     public function getEmptyCollection()
     {
-        $collection = new EntityCollection();
+        $collection = new EntityCollection(Person::class);
         // Collections map mocck
         $collectionsMap = $this->getMockedCollectionMap();
         $collectionsMap->expects($this->once())
@@ -310,7 +310,7 @@ class QueryObjectTest extends TestCase
             new Person(['id' => 1, 'name' => 'Mike']),
             new Person(['id' => 2, 'name' => 'Ana']),
         ];
-        return new EntityCollection($data);
+        return new EntityCollection(Person::class, $data);
     }
 
     /**

@@ -9,9 +9,14 @@
 
 namespace Slick\Orm\Entity;
 
+use League\Event\EmitterAwareTrait;
 use Slick\Common\Utils\Collection\AbstractCollection;
-use Slick\Common\Utils\CollectionInterface;
 use Slick\Orm\EntityInterface;
+use Slick\Orm\Event\EntityAdded;
+use Slick\Orm\Exception\EntityNotFoundException;
+use Slick\Orm\Exception\InvalidArgumentException;
+use Slick\Orm\Orm;
+use Slick\Orm\RepositoryInterface;
 
 /**
  * Entity Collection
@@ -20,19 +25,33 @@ use Slick\Orm\EntityInterface;
  * @author  Filipe Silva <silvam.filipe@gmail.com>
  */
 class EntityCollection extends AbstractCollection implements
-    CollectionInterface
+    EntityCollectionInterface
 {
+    /**
+     * @var string
+     */
+    protected $type;
 
     /**
-     * Adds an entity to the collection
-     *
-     * @param EntityInterface $entity
-     * @return $this|self|EntityCollection
+     * @var RepositoryInterface
      */
-    public function add(EntityInterface $entity)
+    protected $repository;
+
+    /**
+     * Emitter methods
+     */
+    use EmitterAwareTrait;
+
+    /**
+     * Creates the collection for entity type with provided data
+     *
+     * @param string $entityType
+     * @param array|\Traversable $data
+     */
+    public function __construct($entityType, $data = [])
     {
-        $this->data[] = $entity;
-        return $this;
+        parent::__construct($data);
+        $this->type = $entityType;
     }
 
     /**
@@ -46,5 +65,100 @@ class EntityCollection extends AbstractCollection implements
     public function offsetSet($offset, $value)
     {
         $this->add($value);
+    }
+
+    /**
+     * Adds an entity to the collection
+     *
+     * This method adds an entity to the collection by accepting the entity
+     * itself or the entity id value
+     *
+     * @param EntityInterface|integer $entity
+     *
+     * @throws EntityNotFoundException If the provided id is does not
+     *  references an existing entity.
+     * @throws InvalidArgumentException If the entity is not from
+     *  the provided entity type
+     *
+     * @return self
+     */
+    public function add($entity)
+    {
+        if ($entity instanceof EntityInterface) {
+            return $this->addEntity($entity);
+        }
+        return $this->addEntityWithId($entity);
+    }
+
+    /**
+     * Adds an entity to the collection
+     *
+     * @param EntityInterface $entity
+     * @throws InvalidArgumentException If the entity is not from
+     *  the provided entity type
+     *
+     * @return self
+     */
+    public function addEntity(EntityInterface $entity)
+    {
+        if (!is_a($entity, $this->type)) {
+            throw new InvalidArgumentException(
+                "Trying to add an entity that is not a {$this->type}."
+            );
+        }
+        $this->data[] = $entity;
+        $event = new EntityAdded($entity);
+        $this->getEmitter()->emit($event->getName());
+        return $this;
+    }
+
+    /**
+     * Adds an entity by entity id
+     *
+     * @param mixed $entityId
+     *
+     * @throws EntityNotFoundException If the provided id is does not
+     *  references an existing entity.
+     * @throws InvalidArgumentException If the entity is not from
+     *  the provided entity type
+     *
+     * @return self
+     */
+    public function addEntityWithId($entityId)
+    {
+        $entity = $this->getRepository()->get($entityId);
+        if (!$entity) {
+            throw new EntityNotFoundException(
+                "The entity with is '{$entityId}' was not found."
+            );
+        }
+        return $this->addEntity($entity);
+        
+    }
+
+    /**
+     * Gets entity repository for this collection
+     * 
+     * @return RepositoryInterface
+     */
+    public function getRepository()
+    {
+        if (null == $this->repository) {
+            $this->setRepository(Orm::getRepository($this->type));
+        }
+        return $this->repository;
+    }
+
+    /**
+     * Set repository for this entity collection
+     * 
+     * @param RepositoryInterface $repository
+     * 
+     * @return self|$this|EntityCollection
+     */
+    public function setRepository(RepositoryInterface $repository)
+    {
+        $this->repository = $repository;
+        return $this;
     }
 }
