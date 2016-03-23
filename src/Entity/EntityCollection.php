@@ -38,6 +38,11 @@ class EntityCollection extends AbstractCollection implements
     protected $repository;
 
     /**
+     * @var EntityInterface|null
+     */
+    protected $parentEntity;
+
+    /**
      * Emitter methods
      */
     use EmitterAwareTrait;
@@ -107,8 +112,8 @@ class EntityCollection extends AbstractCollection implements
             );
         }
         $this->data[] = $entity;
-        $event = new EntityAdded($entity);
-        $this->getEmitter()->emit($event->getName());
+        $event = new EntityAdded($entity, ['collection' => $this]);
+        $this->getEmitter()->emit($event);
         return $this;
     }
 
@@ -159,6 +164,29 @@ class EntityCollection extends AbstractCollection implements
     public function setRepository(RepositoryInterface $repository)
     {
         $this->repository = $repository;
+        return $this;
+    }
+
+    /**
+     * Get the parent entity if this collection is a relation in other entity
+     *
+     * @return null|EntityInterface
+     */
+    public function parentEntity()
+    {
+        return $this->parentEntity;
+    }
+
+    /**
+     * Set the parent entity if this collection is a relation in other entity
+     *
+     * @param EntityInterface $entity
+     *
+     * @return self
+     */
+    public function setParentEntity(EntityInterface $entity)
+    {
+        $this->parentEntity = $entity;
         return $this;
     }
 }

@@ -11,8 +11,11 @@ namespace Slick\Tests\Orm\Mapper\Relation;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use Slick\Database\Adapter\AdapterInterface;
+use Slick\Database\Sql\Update;
 use Slick\Orm\Descriptor\EntityDescriptorRegistry;
 use Slick\Orm\Entity\EntityCollection;
+use Slick\Orm\Event\EntityAdded;
 use Slick\Orm\Mapper\Relation\HasMany;
 use Slick\Orm\Repository\QueryObject\QueryObject;
 use Slick\Orm\RepositoryInterface;
@@ -96,6 +99,26 @@ class HasManyTest extends TestCase
     }
 
     /**
+     * Is called to update the relation foreign key upon collection add event
+     * @test
+     */
+    public function addHandler()
+    {
+        $adapter = $this->getMockedAdapter();
+        $adapter->expects($this->once())
+            ->method('execute')
+            ->with($this->isInstanceOf(Update::class), [':id' => 2, ':user_id' => 2])
+            ->willReturn(1);
+        $this->hasMany->setAdapter($adapter);
+        $person = new Person(['id' => '2', 'name' => 'test']);
+        $post = new Post(['id' => 2, 'title' => 'test']);
+        $collection = new EntityCollection(Person::class);
+        $collection->setParentEntity($person);
+        $event = new EntityAdded($post, ['collection' => $collection]);
+        $this->hasMany->add($event);
+    }
+
+    /**
      * Gets the annotation for relation
      *
      * @return \Slick\Orm\Annotations\HasMany
@@ -143,5 +166,21 @@ class HasManyTest extends TestCase
             ->setMethods($methods)
             ->getMock();
         return $repository;
+    }
+
+    /**
+     * Gets a mocked adapter
+     *
+     * @return MockObject|AdapterInterface
+     */
+    protected function getMockedAdapter()
+    {
+        $class = AdapterInterface::class;
+        $methods = get_class_methods($class);
+        /** @var AdapterInterface|MockObject $adapter */
+        $adapter = $this->getMockBuilder($class)
+            ->setMethods($methods)
+            ->getMock();
+        return $adapter;
     }
 }

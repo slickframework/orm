@@ -76,4 +76,20 @@ interface EntityCollectionInterface extends
      * @return self
      */
     public function addEntityWithId($entityId);
+
+    /**
+     * Get the parent entity if this collection is a relation in other entity
+     * 
+     * @return null|EntityInterface
+     */
+    public function parentEntity();
+
+    /**
+     * Set the parent entity if this collection is a relation in other entity
+     * 
+     * @param EntityInterface $entity
+     * 
+     * @return self
+     */
+    public function setParentEntity(EntityInterface $entity);
 }

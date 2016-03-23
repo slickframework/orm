@@ -14,6 +14,7 @@ use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
 use Domain\Person;
+use Domain\Post;
 use Domain\Profile;
 use PHPUnit_Framework_Assert as Assert;
 use Slick\Database\Adapter;
@@ -78,6 +79,11 @@ class OrmContext extends \AbstractContext implements
      * @var mixed
      */
     protected $selectedValue;
+
+    /**
+     * @var Post
+     */
+    protected $post;
 
 
     /**
@@ -347,5 +353,39 @@ class OrmContext extends \AbstractContext implements
     public function entityCollectionShouldBeEmpty()
     {
         Assert::assertEmpty($this->selectedValue);
+    }
+
+    /**
+     * @Given /^I create a post with:$/
+     */
+    public function iCreateAPostWith(TableNode $table)
+    {
+        $hash = $table->getHash();
+        $this->post = new Post($hash[0]);
+        $this->post->save();
+    }
+
+    /**
+     * @When /^I add the post to entity$/
+     */
+    public function iAddThePostToEntity()
+    {
+        $this->entity->posts->add($this->post);
+    }
+
+    /**
+     * @Then /^entity collection should not be empty$/
+     */
+    public function entityCollectionShouldNotBeEmpty()
+    {
+        Assert::assertNotEmpty($this->selectedValue);
+    }
+
+    /**
+     * @Given /^I delete the post$/
+     */
+    public function iDeleteThePost()
+    {
+        $this->post->delete();
     }
 }

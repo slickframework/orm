@@ -10,8 +10,11 @@
 namespace Slick\Orm\Mapper\Relation;
 
 use Slick\Common\Utils\Text;
+use Slick\Database\Sql;
 use Slick\Orm\Entity\EntityCollection;
+use Slick\Orm\Entity\EntityCollectionInterface;
 use Slick\Orm\EntityInterface;
+use Slick\Orm\Event\EntityAdded;
 use Slick\Orm\Mapper\RelationInterface;
 
 /**
@@ -74,11 +77,35 @@ class HasMany extends AbstractRelation implements RelationInterface
     public function load(EntityInterface $entity)
     {
         $repository = $this->getParentRepository();
+        /** @var EntityCollectionInterface $collection */
         $collection = $repository->find()
             ->where($this->getConditions($entity))
             ->limit($this->limit)
             ->all();
+        $collection
+            ->setParentEntity($entity)
+            ->getEmitter()
+            ->addListener(EntityAdded::ACTION_ADD, [$this, 'add']);
+
         return $collection;
+    }
+
+    /**
+     * Saves the relation foreign key upon entity add
+     * 
+     * @param EntityAdded $event
+     */    
+    public function add(EntityAdded $event)
+    {
+        $entity = $event->getEntity();
+        $table = $this->getParentTableName();
+        $pmk = $this->getParentPrimaryKey();
+        $value = $event->getCollection()->parentEntity()->getId();
+        Sql::createSql($this->getAdapter())
+            ->update($table)
+            ->set([$this->getForeignKey() => $value])
+            ->where(["{$pmk} = :id" => [':id' => $entity->getId()]])
+            ->execute();
     }
 
     /**

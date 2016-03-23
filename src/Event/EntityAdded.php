@@ -8,6 +8,7 @@
  */
 
 namespace Slick\Orm\Event;
+use Slick\Orm\Entity\EntityCollectionInterface;
 
 /**
  * Entity Added: triggered when an entity is added to an entity collection
@@ -17,14 +18,26 @@ namespace Slick\Orm\Event;
  */
 class EntityAdded extends AbstractEvent implements EventInterface
 {
+    
+    const ACTION_ADD = 'entity.added';
 
     /**
      * @var string
      */
-    protected $name = 'Save';
+    protected $name = 'EntityAdded';
 
     /**
      * @var string
      */
-    protected $action = 'entity.added';
+    protected $action = self::ACTION_ADD;
+
+    /**
+     * Gets the entity collection that triggers the event
+     * 
+     * @return EntityCollectionInterface
+     */
+    public function getCollection()
+    {
+        return $this->params['collection'];
+    }
 }
