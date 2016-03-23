@@ -10,7 +10,7 @@
 namespace Slick\Orm\Entity;
 
 use League\Event\EmitterAwareInterface;
-use Slick\Common\Utils\CollectionInterface;
+use Slick\Common\Utils\Collection\ListInterface;
 use Slick\Orm\EntityInterface;
 use Slick\Orm\Exception\EntityNotFoundException;
 use Slick\Orm\Exception\InvalidArgumentException;
@@ -22,7 +22,7 @@ use Slick\Orm\Exception\InvalidArgumentException;
  * @author  Filipe Silva <silvam.filipe@gmail.com>
  */
 interface EntityCollectionInterface extends
-    CollectionInterface,
+    ListInterface,
     EmitterAwareInterface
 {
 
@@ -92,4 +92,20 @@ interface EntityCollectionInterface extends
      * @return self
      */
     public function setParentEntity(EntityInterface $entity);
+
+    /**
+     * Gets the cache id used for this collection
+     * 
+     * @return string
+     */
+    public function getId();
+
+    /**
+     * Sets the cache id used for this collection
+     * 
+     * @param string $collectionId
+     * 
+     * @return self
+     */
+    public function setId($collectionId);
 }

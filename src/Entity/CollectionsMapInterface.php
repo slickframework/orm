@@ -22,11 +22,11 @@ interface CollectionsMapInterface
      * Set an entity
      *
      * @param string $collectionId
-     * @param EntityCollection $collection
+     * @param EntityCollectionInterface $collection
      *
      * @return self|$this|CollectionsMapInterface
      */
-    public function set($collectionId, EntityCollection $collection);
+    public function set($collectionId, EntityCollectionInterface $collection);
 
     /**
      * Gets the entity with provided id

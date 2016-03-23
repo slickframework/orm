@@ -12,6 +12,8 @@ namespace Slick\Orm\Repository\QueryObject;
 use Slick\Database\Sql\Select;
 use Slick\Orm\Entity\EntityCollection;
 use Slick\Orm\EntityInterface;
+use Slick\Orm\Event\EntityAdded;
+use Slick\Orm\Event\EntityRemoved;
 use Slick\Orm\RepositoryInterface;
 
 /**
@@ -72,11 +74,36 @@ class QueryObject extends Select implements QueryObjectInterface
                 $data,
                 $collection
             );
+            $collection->setId($cid);
+            $collection->getEmitter()
+                ->addListener(
+                    EntityAdded::ACTION_ADD,
+                    [$this, 'updateCollection']
+                );
+            $collection->getEmitter()
+                ->addListener(
+                    EntityRemoved::ACTION_REMOVE,
+                    [$this, 'updateCollection']
+                );
             $this->repository->getCollectionsMap()->set($cid, $collection);
             $this->updateIdentityMap($collection);
         }
 
         return $collection;
+    }
+
+    /**
+     * Handles collection add event and updates the cache
+     * 
+     * @param EntityAdded $event
+     */
+    public function updateCollection(EntityAdded $event)
+    {
+        $collection = $event->getCollection();
+        if ($collection->getId()) {
+            $this->repository->getCollectionsMap()
+                ->set($collection->getId(), $collection);
+        }
     }
 
     /**

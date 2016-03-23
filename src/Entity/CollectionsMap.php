@@ -30,11 +30,11 @@ class CollectionsMap implements CollectionsMapInterface
      * Set an entity
      *
      * @param string $collectionId
-     * @param EntityCollection $collection
+     * @param EntityCollectionInterface $collection
      *
      * @return self|$this|CollectionsMapInterface
      */
-    public function set($collectionId, EntityCollection $collection)
+    public function set($collectionId, EntityCollectionInterface $collection)
     {
         $this->getCache()->set($collectionId, $collection);
         return $this;

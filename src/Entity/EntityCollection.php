@@ -10,9 +10,10 @@
 namespace Slick\Orm\Entity;
 
 use League\Event\EmitterAwareTrait;
-use Slick\Common\Utils\Collection\AbstractCollection;
+use Slick\Common\Utils\Collection\AbstractList;
 use Slick\Orm\EntityInterface;
 use Slick\Orm\Event\EntityAdded;
+use Slick\Orm\Event\EntityRemoved;
 use Slick\Orm\Exception\EntityNotFoundException;
 use Slick\Orm\Exception\InvalidArgumentException;
 use Slick\Orm\Orm;
@@ -24,7 +25,7 @@ use Slick\Orm\RepositoryInterface;
  * @package Slick\Orm\Entity
  * @author  Filipe Silva <silvam.filipe@gmail.com>
  */
-class EntityCollection extends AbstractCollection implements
+class EntityCollection extends AbstractList implements
     EntityCollectionInterface
 {
     /**
@@ -41,6 +42,11 @@ class EntityCollection extends AbstractCollection implements
      * @var EntityInterface|null
      */
     protected $parentEntity;
+
+    /**
+     * @var string
+     */
+    protected $cid;
 
     /**
      * Emitter methods
@@ -188,5 +194,77 @@ class EntityCollection extends AbstractCollection implements
     {
         $this->parentEntity = $entity;
         return $this;
+    }
+
+    /**
+     * Gets the cache id used for this collection
+     *
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->cid;
+    }
+
+    /**
+     * Sets the cache id used for this collection
+     *
+     * @param string $collectionId
+     *
+     * @return self
+     */
+    public function setId($collectionId)
+    {
+        $this->cid = $collectionId;
+        return $this;
+    }
+
+    /**
+     * Removes the element at the given index, and returns it.
+     *
+     * @param integer|EntityInterface $index
+     *
+     * @return EntityInterface|null
+     */
+    public function remove($index)
+    {
+        if (!$index instanceof EntityInterface) {
+            $index = $this->getRepository()->get($index);
+        }
+        
+        return $this->findAndRemove($index);
+    }
+
+    /**
+     * Iterates over the collection to remove an entity if found
+     * 
+     * @param EntityInterface|null $entity
+     * @return EntityInterface
+     */
+    protected function findAndRemove(EntityInterface $entity = null)
+    {
+        if (null == $entity) {
+            return $entity;
+        }
+
+        /**
+         * @var int $key
+         * @var EntityInterface $existent
+         */
+        foreach ($this->data as $key => $existent) {
+            if ($existent->getId() == $entity->getId()) {
+                parent::remove($key);
+                $this->getEmitter()
+                    ->emit(
+                        new EntityRemoved(
+                            $entity,
+                            ['collection' => $this]
+                        )
+                    );
+                break;
+            }
+        }
+        
+        return $entity;
     }
 }
