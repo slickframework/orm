@@ -13,6 +13,7 @@ use Slick\Database\Sql\Select;
 use Slick\Orm\Entity\EntityCollection;
 use Slick\Orm\EntityInterface;
 use Slick\Orm\Event\EntityAdded;
+use Slick\Orm\Event\EntityChangeEventInterface;
 use Slick\Orm\Event\EntityRemoved;
 use Slick\Orm\RepositoryInterface;
 
@@ -95,9 +96,9 @@ class QueryObject extends Select implements QueryObjectInterface
     /**
      * Handles collection add event and updates the cache
      * 
-     * @param EntityAdded $event
+     * @param EntityChangeEventInterface $event
      */
-    public function updateCollection(EntityAdded $event)
+    public function updateCollection(EntityChangeEventInterface $event)
     {
         $collection = $event->getCollection();
         if ($collection->getId()) {

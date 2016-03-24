@@ -170,12 +170,6 @@ abstract class AbstractRelation extends Base
      */
     protected function registerEntity($entity)
     {
-        if ($entity instanceof EntityCollection) {
-            foreach ($entity as $item) {
-                $this->registerEntity($item);
-            }
-        }
-
         Orm::getRepository($this->getParentEntity())
             ->getIdentityMap()
             ->set($entity);

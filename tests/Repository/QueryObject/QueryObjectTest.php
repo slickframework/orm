@@ -19,6 +19,7 @@ use Slick\Orm\Entity\CollectionsMapInterface;
 use Slick\Orm\Entity\EntityCollection;
 use Slick\Orm\EntityInterface;
 use Slick\Orm\EntityMapperInterface;
+use Slick\Orm\Event\EntityRemoved;
 use Slick\Orm\Repository\IdentityMapInterface;
 use Slick\Orm\Repository\QueryObject\QueryObject;
 use Slick\Orm\RepositoryInterface;
@@ -227,6 +228,32 @@ class QueryObjectTest extends TestCase
             ->method('getCollectionsMap')
             ->willReturn($collectionsMap);
         $this->assertSame($collection, $this->queryObject->all());
+    }
+
+    /**
+     * Should replace the cached collection on event
+     * @test
+     */
+    public function updateCollection()
+    {
+
+        $entity = new Person(['id' => 1, 'name' => 'test']);
+        $collection = new EntityCollection(Person::class, [$entity]);
+        $cid = 'SELECT people.* FROM people';
+        $collection->setId($cid);
+        // Collections map mock
+        $collectionsMap = $this->getMockedCollectionMap();
+        $collectionsMap->expects($this->once())
+            ->method('set')
+            ->with($cid, $collection)
+            ->willReturn($collectionsMap);
+        /** @var RepositoryInterface|MockObject $repository */
+        $repository = $this->queryObject->getRepository();
+        $repository->expects($this->once())
+            ->method('getCollectionsMap')
+            ->willReturn($collectionsMap);
+        $event = new EntityRemoved($entity, ['collection' => $collection]);
+        $this->queryObject->updateCollection($event);
     }
 
     /**

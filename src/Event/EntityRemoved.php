@@ -17,7 +17,7 @@ use Slick\Orm\Entity\EntityCollectionInterface;
  * @package Slick\Orm\Event
  * @author  Filipe Silva <silvam.filipe@gmail.com>
  */
-class EntityRemoved extends AbstractEvent implements EventInterface
+class EntityRemoved extends AbstractEvent implements EntityChangeEventInterface
 {
 
     const ACTION_REMOVE = 'entity.removed';

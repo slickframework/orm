@@ -247,10 +247,7 @@ class EntityCollection extends AbstractList implements
             return $entity;
         }
 
-        /**
-         * @var int $key
-         * @var EntityInterface $existent
-         */
+        /** @var EntityInterface $existent */
         foreach ($this->data as $key => $existent) {
             if ($existent->getId() == $entity->getId()) {
                 parent::remove($key);

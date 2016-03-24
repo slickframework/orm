@@ -124,6 +124,43 @@ class EntityCollectionTest extends TestCase
     }
 
     /**
+     * Should remove the entity
+     * @test
+     */
+    public function removeEntity()
+    {
+
+        $entity = new Person(['id' => 2, 'name' => 'test']);
+        $repository = $this->getMockedRepository();
+        $repository->expects($this->once())
+            ->method('get')
+            ->with(2)
+            ->willReturn($entity);
+        $this->entities->add($entity);
+        $this->entities->setRepository($repository);
+        $this->entities->remove(2);
+        $this->assertEmpty($this->entities);
+    }
+
+    /**
+     * Is no match is found just quit the operation
+     * @test
+     */
+    public function removeNull()
+    {
+        $repository = $this->getMockedRepository();
+        $repository->expects($this->once())
+            ->method('get')
+            ->with(2)
+            ->willReturn(null);
+        $entity = new Person(['id' => 3, 'name' => 'test']);
+        $this->entities->add($entity);
+        $this->entities->setRepository($repository);
+        $this->entities->remove(2);
+        $this->assertNotEmpty($this->entities);
+    }
+
+    /**
      * Get mocked repository
      *
      * @return MockObject|RepositoryInterface
