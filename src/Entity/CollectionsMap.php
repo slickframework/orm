@@ -11,6 +11,7 @@ namespace Slick\Orm\Entity;
 
 use Slick\Cache\Cache;
 use Slick\Cache\CacheStorageInterface;
+use Traversable;
 
 /**
  * Collections Map store

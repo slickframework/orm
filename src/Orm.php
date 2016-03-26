@@ -283,8 +283,10 @@ final class Orm
             $this->adapters->get($this->getAdapterAlias($entityClass))
         )
             ->setEntityMapper($this->getMapperFor($entityClass))
-            ->setEntityDescriptor(EntityDescriptorRegistry::getInstance()
-                ->getDescriptorFor($entityClass));
+            ->setEntityDescriptor(
+                EntityDescriptorRegistry::getInstance()
+                    ->getDescriptorFor($entityClass)
+            );
         $this->repositories->set($entityClass, $repository);
         return $repository;
     }

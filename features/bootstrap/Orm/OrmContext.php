@@ -388,4 +388,19 @@ class OrmContext extends \AbstractContext implements
     {
         $this->post->delete();
     }
+
+    /**
+     * @Then /^collection should not have a person maned "([^"]*)"$/
+     */
+    public function collectionShouldNotHaveAPersonManed($name)
+    {
+        $found = false;
+        foreach ($this->collection as $person) {
+            if ($name == $person->name) {
+                $found = true;
+                break;
+            }
+        }
+        Assert::assertFalse($found);
+    }
 }

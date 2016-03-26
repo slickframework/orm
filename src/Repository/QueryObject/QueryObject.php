@@ -12,9 +12,11 @@ namespace Slick\Orm\Repository\QueryObject;
 use Slick\Database\Sql\Select;
 use Slick\Orm\Entity\EntityCollection;
 use Slick\Orm\EntityInterface;
+use Slick\Orm\Event\Delete;
 use Slick\Orm\Event\EntityAdded;
 use Slick\Orm\Event\EntityChangeEventInterface;
 use Slick\Orm\Event\EntityRemoved;
+use Slick\Orm\Orm;
 use Slick\Orm\RepositoryInterface;
 
 /**
@@ -86,6 +88,15 @@ class QueryObject extends Select implements QueryObjectInterface
                     EntityRemoved::ACTION_REMOVE,
                     [$this, 'updateCollection']
                 );
+            $entity = $this->repository->getEntityDescriptor()->className();
+            Orm::addListener(
+                $entity,
+                Delete::ACTION_AFTER_DELETE,
+                function (Delete $event) use ($collection) {
+                    $collection->remove($event->getEntity());
+                }
+            );
+            
             $this->repository->getCollectionsMap()->set($cid, $collection);
             $this->updateIdentityMap($collection);
         }
