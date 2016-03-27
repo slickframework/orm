@@ -144,6 +144,12 @@ class HasOne extends BelongsTo
         $tableName = $this->getParentTableName();
         $pmk = $this->getParentPrimaryKey();
         $index = "{$tableName}_{$pmk}";
+
+        // No join data on results
+        if (! array_key_exists($index, $dataRow)) {
+            return false;
+        }
+
         $entity = $this->getParentRepository()
             ->getIdentityMap()
             ->get($dataRow[$index], false);

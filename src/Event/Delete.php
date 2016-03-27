@@ -24,7 +24,7 @@ class Delete extends AbstractEvent implements EventInterface
     /**
      * @var string
      */
-    protected $name = 'Save';
+    protected $name = 'Delete';
 
     /**
      * @var string

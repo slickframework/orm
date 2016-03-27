@@ -9,7 +9,9 @@
 
 namespace Slick\Orm\Repository\QueryObject;
 
+use League\Event\EmitterInterface;
 use Slick\Database\Sql\Select;
+use Slick\Orm\Entity\CollectionsMap;
 use Slick\Orm\Entity\EntityCollection;
 use Slick\Orm\EntityInterface;
 use Slick\Orm\Event\Delete;
@@ -32,6 +34,11 @@ class QueryObject extends Select implements QueryObjectInterface
      * @var RepositoryInterface
      */
     protected $repository;
+
+    /**
+     * @var CollectionsMap
+     */
+    protected $collectionsMap;
 
     /**
      * For triggering events
@@ -60,62 +67,7 @@ class QueryObject extends Select implements QueryObjectInterface
      */
     public function all()
     {
-        $cid = $this->getId($this);
-        $collection = $this->repository
-            ->getCollectionsMap()
-            ->get($cid, false);
-
-        if (false === $collection) {
-            $this->triggerBeforeSelect(
-                $this,
-                $this->getRepository()->getEntityDescriptor()
-            );
-            $data = $this->adapter->query($this, $this->getParameters());
-            $collection = $this->repository->getEntityMapper()
-                ->createFrom($data);
-            $this->triggerAfterSelect(
-                $data,
-                $collection
-            );
-            $collection->setId($cid);
-            $collection->getEmitter()
-                ->addListener(
-                    EntityAdded::ACTION_ADD,
-                    [$this, 'updateCollection']
-                );
-            $collection->getEmitter()
-                ->addListener(
-                    EntityRemoved::ACTION_REMOVE,
-                    [$this, 'updateCollection']
-                );
-            $entity = $this->repository->getEntityDescriptor()->className();
-            Orm::addListener(
-                $entity,
-                Delete::ACTION_AFTER_DELETE,
-                function (Delete $event) use ($collection) {
-                    $collection->remove($event->getEntity());
-                }
-            );
-            
-            $this->repository->getCollectionsMap()->set($cid, $collection);
-            $this->updateIdentityMap($collection);
-        }
-
-        return $collection;
-    }
-
-    /**
-     * Handles collection add event and updates the cache
-     * 
-     * @param EntityChangeEventInterface $event
-     */
-    public function updateCollection(EntityChangeEventInterface $event)
-    {
-        $collection = $event->getCollection();
-        if ($collection->getId()) {
-            $this->repository->getCollectionsMap()
-                ->set($collection->getId(), $collection);
-        }
+        return $this->query($this);
     }
 
     /**
@@ -127,39 +79,128 @@ class QueryObject extends Select implements QueryObjectInterface
     {
         $sql = clone($this);
         $sql->limit(1);
-        $cid = $this->getId($sql);
+        $collection = $this->query($sql);
+        return $collection->isEmpty() ? null : $collection[0];
+    }
 
+    /**
+     * Handles collection add event and updates the cache
+     * 
+     * @param EntityChangeEventInterface $event
+     */
+    public function updateCollection(EntityChangeEventInterface $event)
+    {
+        $collection = $event->getCollection();
+        if ($collection->getId()) {
+            $collectionMap = $this->getCollectionsMap();
+            $collectionMap
+                ->set($collection->getId(), $collection);
+        }
+    }
+
+    /**
+     * Execute provided query
+     *
+     * @param Select $sql
+     *
+     * @return EntityCollection|EntityInterface|\Slick\Orm\EntityMapperInterface[]
+     */
+    protected function query(Select $sql)
+    {
+        $cid = $this->getId($sql);
         $collection = $this->repository
             ->getCollectionsMap()
             ->get($cid, false);
 
         if (false === $collection) {
-            $this->triggerBeforeSelect(
-                $sql,
-                $this->getRepository()->getEntityDescriptor()
-            );
-            $data = $this->adapter->query($sql, $sql->getParameters());
-            $collection = $this->repository->getEntityMapper()
-                ->createFrom($data);
-            $this->triggerAfterSelect(
-                $data,
-                $collection
-            );
-            $this->repository->getCollectionsMap()->set($cid, $collection);
-            $this->updateIdentityMap($collection);
+            $collection = $this->getCollection($sql, $cid);
         }
 
-        return $collection->isEmpty() ? null : $collection[0];
+        return $collection;
+    }
+
+    /**
+     * Executes the provided query
+     *
+     * @param Select $sql
+     * @param string $cid
+     *
+     * @return EntityCollection|EntityInterface|\Slick\Orm\EntityMapperInterface[]
+     */
+    protected function getCollection(Select $sql, $cid)
+    {
+        $this->triggerBeforeSelect(
+            $sql,
+            $this->getRepository()->getEntityDescriptor()
+        );
+        $data = $this->adapter->query($sql, $sql->getParameters());
+        $collection = $this->repository->getEntityMapper()
+            ->createFrom($data);
+        $this->triggerAfterSelect(
+            $data,
+            $collection
+        );
+        $this->registerEventsTo($collection, $cid);
+        $this->getCollectionsMap()->set($cid, $collection);
+        $this->updateIdentityMap($collection);
+        
+        return $collection;
+    }
+
+    /**
+     * Returns the collections map storage
+     *
+     * @return CollectionsMap|\Slick\Orm\Entity\CollectionsMapInterface
+     */
+    protected function getCollectionsMap()
+    {
+        if (null == $this->collectionsMap) {
+            $this->collectionsMap = $this->repository->getCollectionsMap();
+        }
+        return $this->collectionsMap;
+    }
+
+    /**
+     * Register entity events listeners for the provided collection
+     * 
+     * @param EntityCollection $collection
+     * @param string $cid
+     * 
+     * @return self
+     */
+    protected function registerEventsTo(EntityCollection $collection, $cid)
+    {
+        $collection->setId($cid);
+        $collection->getEmitter()
+            ->addListener(
+                EntityAdded::ACTION_ADD,
+                [$this, 'updateCollection']
+            );
+        $collection->getEmitter()
+            ->addListener(
+                EntityRemoved::ACTION_REMOVE,
+                [$this, 'updateCollection']
+            );
+        $entity = $this->repository->getEntityDescriptor()->className();
+        Orm::addListener(
+            $entity,
+            Delete::ACTION_AFTER_DELETE,
+            function (Delete $event) use ($collection) {
+                $collection->remove($event->getEntity());
+            },
+            EmitterInterface::P_HIGH
+        );
+        return $this;
     }
 
     /**
      * Gets the id for this query
      *
-     * @param QueryObjectInterface $query
+     * @param Select $query
      *
      * @return string
      */
-    protected function getId(QueryObjectInterface $query)
+    protected function getId(Select $query)
     {
         $str = $query->getQueryString();
         $search = array_keys($query->getParameters());

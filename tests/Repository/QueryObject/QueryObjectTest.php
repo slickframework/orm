@@ -13,13 +13,16 @@ use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use PHPUnit_Framework_TestCase as TestCase;
 use Slick\Database\Adapter;
 use Slick\Database\Adapter\AdapterInterface;
+use Slick\Database\RecordList;
 use Slick\Database\Sql\Dialect;
 use Slick\Orm\Descriptor\EntityDescriptorInterface;
 use Slick\Orm\Entity\CollectionsMapInterface;
 use Slick\Orm\Entity\EntityCollection;
 use Slick\Orm\EntityInterface;
 use Slick\Orm\EntityMapperInterface;
+use Slick\Orm\Event\Delete;
 use Slick\Orm\Event\EntityRemoved;
+use Slick\Orm\Orm;
 use Slick\Orm\Repository\IdentityMapInterface;
 use Slick\Orm\Repository\QueryObject\QueryObject;
 use Slick\Orm\RepositoryInterface;
@@ -103,14 +106,16 @@ class QueryObjectTest extends TestCase
         $adapter->expects($this->once())
             ->method('query')
             ->with($this->queryObject, [])
-            ->willReturn([]);
+            ->willReturn([
+                ['id' => 1, 'name' => 'Mike'],
+                ['id' => 2, 'name' => 'Ana']
+            ]);
         $this->queryObject->setAdapter($adapter);
 
 
         $entityMapper = $this->getMockedEntityMapper();
         $entityMapper->expects($this->once())
             ->method('createFrom')
-            ->with([])
             ->willReturn($collection);
 
         $identityMap = $this->getIdentityMapMock();
@@ -156,14 +161,16 @@ class QueryObjectTest extends TestCase
         $adapter->expects($this->once())
             ->method('query')
             ->with($this->isInstanceOf(QueryObject::class), [])
-            ->willReturn([]);
+            ->willReturn([
+                ['id' => 1, 'name' => 'Ana'],
+                ['id' => 2, 'name' => 'Mike']
+            ]);
         $this->queryObject->setAdapter($adapter);
 
 
         $entityMapper = $this->getMockedEntityMapper();
         $entityMapper->expects($this->once())
             ->method('createFrom')
-            ->with([])
             ->willReturn($collection);
 
         $identityMap = $this->getIdentityMapMock();
@@ -257,6 +264,50 @@ class QueryObjectTest extends TestCase
     }
 
     /**
+     * Should remove the entity from all collections when entity is deleted
+     * @test
+     */
+    public function removeOnDelete()
+    {
+        $collection = new EntityCollection(Person::class, [
+            new Person(['id' => 1, 'name' => 'Ana']),
+            new Person(['id' => 2, 'name' => 'Mike'])
+        ]);
+        $collection->setId('SELECT people.* FROM people');
+        $cMap = $this->getMockedCollectionMap();
+        $cMap->method('get')
+            ->willReturn(false);
+        $cMap->method('set')
+            ->willReturn($cMap);
+
+        /** @var RepositoryInterface|MockObject $repo */
+        $repo = $this->queryObject->getRepository();
+        
+        $repo->method('getCollectionsMap')
+            ->willReturn($cMap);
+
+        $adapter = $this->getMockedAdapter();
+        $adapter->method('query')
+            ->willReturn([
+                ['id' => 1, 'name' => 'Ana'],
+                ['id' => 2, 'name' => 'Mike']
+            ]);
+        $this->queryObject->setAdapter($adapter);
+        $entityMapper = $this->getMockedEntityMapper();
+        $repo->method('getEntityMapper')->willReturn($entityMapper);
+        $entityMapper->method('createFrom')->willReturn($collection);
+        $repo->method('getIdentityMap')->willReturn($this->getIdentityMapMock());
+        $repo->method('getEntityDescriptor')->willReturn($this->getMockedEntityDescriptor());
+
+        $this->queryObject->all();
+        $ana = $collection[0];
+        $event = new Delete($ana);
+        $event->setAction(Delete::ACTION_AFTER_DELETE);
+        Orm::getEmitter(Person::class)->emit($event);
+        $this->assertEquals(1, $collection->count());
+    }
+
+    /**
      * Get a mocked repository
      *
      * @return RepositoryInterface|MockObject
@@ -308,6 +359,8 @@ class QueryObjectTest extends TestCase
             ->getMock();
         $descriptor->method('getTableName')
             ->willReturn('people');
+        $descriptor->method('className')
+            ->willReturn(Person::class);
         return $descriptor;
     }
 
