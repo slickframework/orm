@@ -12,6 +12,7 @@ namespace Slick\Orm\Mapper;
 use Slick\Database\RecordList;
 use Slick\Database\Sql;
 use Slick\Orm\Descriptor\Field\FieldDescriptor;
+use Slick\Orm\Entity\EntityCollectionInterface;
 use Slick\Orm\EntityInterface;
 use Slick\Orm\EntityMapperInterface;
 use Slick\Orm\Entity\EntityCollection;
@@ -151,7 +152,7 @@ class EntityMapper extends AbstractEntityMapper implements
      *
      * @param array|RecordList $data
      *
-     * @return EntityInterface|EntityMapperInterface[]|EntityCollection
+     * @return EntityInterface|EntityCollectionInterface
      */
     public function createFrom($data)
     {

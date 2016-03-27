@@ -13,6 +13,7 @@ use League\Event\EmitterInterface;
 use Slick\Database\Sql\Select;
 use Slick\Orm\Entity\CollectionsMap;
 use Slick\Orm\Entity\EntityCollection;
+use Slick\Orm\Entity\EntityCollectionInterface;
 use Slick\Orm\EntityInterface;
 use Slick\Orm\Event\Delete;
 use Slick\Orm\Event\EntityAdded;
@@ -103,7 +104,7 @@ class QueryObject extends Select implements QueryObjectInterface
      *
      * @param Select $sql
      *
-     * @return EntityCollection|EntityInterface|\Slick\Orm\EntityMapperInterface[]
+     * @return EntityCollectionInterface
      */
     protected function query(Select $sql)
     {
@@ -125,7 +126,7 @@ class QueryObject extends Select implements QueryObjectInterface
      * @param Select $sql
      * @param string $cid
      *
-     * @return EntityCollection|EntityInterface|\Slick\Orm\EntityMapperInterface[]
+     * @return EntityCollectionInterface
      */
     protected function getCollection(Select $sql, $cid)
     {
