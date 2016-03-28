@@ -77,7 +77,9 @@ class HasManyTest extends TestCase
     {
         $collection = new EntityCollection(Person::class);
         $entity = new Person(['id' => 1, 'name' => 'test']);
-        $query = $this->getQueryObjectMocked(['where', 'all', 'limit']);
+        $query = $this->getQueryObjectMocked(
+            ['where', 'all', 'limit', 'andWhere']
+        );
         $query->method('all')->willReturn($collection);
         $query->method('limit')->willReturn($query);
         $query->expects($this->once())
@@ -90,6 +92,12 @@ class HasManyTest extends TestCase
                 ]
             )
             ->willReturn($query);
+
+        $query->expects($this->once())
+            ->method('andWhere')
+            ->with(['1=1'])
+            ->willReturn($query);
+
         $repository = $this->getRepositoryMocked();
         $repository->expects($this->once())
             ->method('find')
@@ -129,7 +137,9 @@ class HasManyTest extends TestCase
             $this->annotation = new \Slick\Orm\Annotations\HasMany(
                 'HasMany',
                 [
-                    Post::class => true
+                    Post::class => true,
+                    'order' => 'posts.id DESC',
+                    'conditions' => ['1=1']
                 ]
             );
         }

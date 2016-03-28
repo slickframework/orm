@@ -21,4 +21,4 @@
     And I get a repository for "Domain\Person"
     And I try to find all entities
     When I delete the entity
-    Then collection should not have a person maned "Maria"
+    Then collection should not have a person named "Maria"

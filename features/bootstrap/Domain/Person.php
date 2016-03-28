@@ -10,9 +10,7 @@
 namespace Domain;
 
 use Slick\Orm\Entity;
-use Slick\Orm\Annotations\Column;
-use Slick\Orm\Annotations\HasMany;
-use Slick\Orm\Annotations\HasOne;
+use Slick\Orm\Annotations as Orm;
 use Slick\Orm\EntityInterface;
 
 /**
@@ -27,28 +25,29 @@ class Person extends Entity
 {
     /**
      * @readwrite
-     * @Column type=integer, primaryKey, autoIncrement
+     * @Orm\Column type=integer, primaryKey, autoIncrement
      * @var integer
      */
     protected $uid;
 
     /**
      * @readwrite
-     * @Column type=text
+     * @Orm\Column type=text
      * @var string
      */
     protected $name;
 
     /**
      * @readwrite
-     * @HasOne Domain\Profile
+     * @Orm\HasOne Domain\Profile
      * @var Profile
      */
     protected $profile;
 
     /**
      * @readwrite
-     * @HasMany Domain\Post
+     * @Orm\HasMany Domain\Post, order=posts.title ASC, conditions=1=1
+     *
      * @var Post[]|Entity\EntityCollection
      */
     protected $posts;

@@ -77,11 +77,16 @@ class HasMany extends AbstractRelation implements RelationInterface
     public function load(EntityInterface $entity)
     {
         $repository = $this->getParentRepository();
-        /** @var EntityCollectionInterface $collection */
-        $collection = $repository->find()
+
+        $query = $repository->find()
             ->where($this->getConditions($entity))
-            ->limit($this->limit)
-            ->all();
+            ->limit($this->limit);
+        $this->checkConditions($query)
+            ->checkOrder($query);
+
+        /** @var EntityCollectionInterface $collection */
+        $collection = $query->all();
+
         $collection
             ->setParentEntity($entity)
             ->getEmitter()
@@ -139,5 +144,37 @@ class HasMany extends AbstractRelation implements RelationInterface
             $this->foreignKey = "{$name}_id";
         }
         return $this->foreignKey;
+    }
+
+    /**
+     * Check custom conditions
+     *
+     * @param Sql\Select $query
+     *
+     * @return self
+     */
+    protected function checkConditions(Sql\Select $query)
+    {
+        if (null != $this->conditions) {
+            $query->andWhere($this->conditions);
+        }
+        return $this;
+    }
+
+    /**
+     * Check custom order
+     * 
+     * @param Sql\Select $query
+     * @return self
+     */
+    protected function checkOrder(Sql\Select $query)
+    {
+        $order  = $this->getEntityDescriptor()->getPrimaryKey()->getField();
+        $order .= " DESC";
+        if (null != $this->order) {
+            $order = $this->order;
+        }
+        $query->order($order);
+        return $this;
     }
 }

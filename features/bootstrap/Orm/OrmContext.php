@@ -390,7 +390,7 @@ class OrmContext extends \AbstractContext implements
     }
 
     /**
-     * @Then /^collection should not have a person maned "([^"]*)"$/
+     * @Then /^collection should not have a person named "([^"]*)"$/
      */
     public function collectionShouldNotHaveAPersonManed($name)
     {
