@@ -10,18 +10,18 @@
 namespace Slick\Orm\Annotations;
 
 /**
- * HasMany relation annotation
+ * Class HasAndBelongsToMany
  * 
  * @package Slick\Orm\Annotations
  * @author  Filipe Silva <silvam.filipe@gmail.com>
  */
-class HasMany extends OrmAnnotation
+class HasAndBelongsToMany extends OrmAnnotation
 {
 
     /**
      * @var string
      */
-    protected $name = 'hasMany';
+    protected $name = 'hasAndBelongsToMany';
 
     /**
      * @var array
@@ -29,6 +29,8 @@ class HasMany extends OrmAnnotation
     protected $parameters = [
         'className' => null,
         'foreignKey' => null,
+        'relatedForeignKey' => null,
+        'relationTable' => null,
         'limit' => 25,
         'order' => null,
         'conditions' => null

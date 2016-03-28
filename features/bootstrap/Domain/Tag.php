@@ -14,12 +14,11 @@ use Slick\Orm\Entity;
 use Slick\Orm\EntityInterface;
 
 /**
- * Post
+ * Tag
  *
  * @package Domain
- * @author  Filipe Silva <silvam.filipe@gmail.com>
  */
-class Post extends Entity
+class Tag extends Entity
 {
 
     /**
@@ -34,28 +33,14 @@ class Post extends Entity
      * @Orm\Column type=text
      * @var string
      */
-    protected $title;
+    protected $description;
 
     /**
      * @readwrite
-     * @Orm\Column type=text
-     * @var string
+     * @Orm\HasAndBelongsToMany Domain\Post
+     * @var Post
      */
-    protected $body;
-
-    /**
-     * @readwrite
-     * @Orm\BelongsTo Domain\Person
-     * @var Person
-     */
-    protected $author;
-
-    /**
-     * @readwrite
-     * @Orm\HasAndBelongsToMany Domain\Tag
-     * @var Tag
-     */
-    protected $tags;
+    protected $posts;
 
     /**
      * Returns entity ID
@@ -79,6 +64,5 @@ class Post extends Entity
     public function setId($entityId)
     {
         $this->id = $entityId;
-        return $this;
     }
 }
