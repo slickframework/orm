@@ -155,10 +155,25 @@ abstract class AbstractRelation extends Base
     {
         if (is_null($this->foreignKey)) {
             $name = $this->getParentEntityDescriptor()->getTableName();
-            $name = Text::singular(strtolower($name));
-            $this->foreignKey = "{$name}_id";
+            $this->foreignKey = "{$this->normalizeFieldName($name)}_id";
         }
         return $this->foreignKey;
+    }
+
+    /**
+     * Normalizes the key field by convention
+     * 
+     * @param string $tableName
+     * @return string
+     */
+    protected function normalizeFieldName($tableName)
+    {
+        $tableName = Text::camelCaseToSeparator($tableName, '#');
+        $parts = explode('#', $tableName);
+        $lastName = array_pop($parts);
+        $lastName = Text::singular(strtolower($lastName));
+        array_push($parts, ucfirst($lastName));
+        return lcfirst(implode('', $parts));
     }
 
     /**

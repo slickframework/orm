@@ -11,3 +11,4 @@
     And I get entity with id "1"
     When I retrieve entity "posts" property
     Then property should be an instance of "Slick\Orm\Entity\EntityCollection"
+    And entity collection should not be empty

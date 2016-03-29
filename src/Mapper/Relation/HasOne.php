@@ -58,8 +58,7 @@ class HasOne extends BelongsTo
     {
         if (is_null($this->foreignKey)) {
             $name = $this->getEntityDescriptor()->getTableName();
-            $name = Text::singular(strtolower($name));
-            $this->foreignKey = "{$name}_id";
+            $this->foreignKey = "{$this->normalizeFieldName($name)}_id";
         }
         return $this->foreignKey;
     }
