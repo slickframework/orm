@@ -1,5 +1,5 @@
 {
-  "name": "Slick/orm",
+  "name": "slick/orm",
   "description": "Slick Object-relational mapping package",
   "minimum-stability": "dev",
   "license": "MIT",
