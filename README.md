@@ -34,7 +34,6 @@ and you need to define them before you can actually use them.
 So lets create a simple `Post` entity:
 
 ```php
-
 namespace Domain;
 
 use Slick\Orm\Annotations as Orm;
@@ -77,13 +76,30 @@ class Post extends Entity
 }
 ```
 
-Now with our entity defined lets crate a post:
+Now with our entity defined lets create a blog post:
+
 ```php
 use Domain\Post;
 
 $post = new Post(['title' => 'My blog post title', 'body' => 'This is really long...']);
 $post->save();  // Persists data in database
 ```
+
+### Defining columns
+
+As you can see the `Post` class has a special annotation `@Orm\Column` that marks properties
+as a table columns in the `posts` database table.
+
+`Slick\Orm` uses _convention over configuration_ to determine all the necessary settings to
+map an entity to its persistence system.
+
+Tables names uses the entity class name in plural and camel cased for word concatenation. For
+example entity class `Person` results in a `people` table name and entity class `BlogPost`
+will result in a `blogPosts` table name. You can change the mapped table name using 
+the `@tableName` annotation in the class comment block.
+
+
+
 
 ## Testing
 
