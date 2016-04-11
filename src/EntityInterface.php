@@ -61,4 +61,11 @@ interface EntityInterface
      * @return array
      */
     public function asArray();
+
+    /**
+     * Returns a string representation for this entity
+     * 
+     * @return string
+     */
+    public function __toString();
 }

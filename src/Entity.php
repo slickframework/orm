@@ -76,6 +76,18 @@ abstract class Entity extends Base implements EntityInterface
     }
 
     /**
+     * Returns a string representation for this entity
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        $field = $this->getMapper()->getDescriptor()->getDisplayFiled();
+        $value = $this->{$field->getName()};
+        return (string) $value;
+    }
+
+    /**
      * Retrieves the value of a property with the given name.
      *
      * @param string $name The property name where to get the value from.
