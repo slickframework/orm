@@ -12,6 +12,7 @@ namespace Slick\Orm;
 use Slick\Common\Base;
 use Slick\Common\Exception\WriteOnlyException;
 use Slick\Orm\Descriptor\EntityDescriptorRegistry;
+use Slick\Orm\Descriptor\Field\FieldDescriptor;
 
 /**
  * Entity
@@ -56,6 +57,22 @@ abstract class Entity extends Base implements EntityInterface
     public function getMapper()
     {
         return Orm::getMapper(get_class($this));
+    }
+
+    /**
+     * Returns the entity fields as a key/value associative array
+     *
+     * @return array
+     */
+    public function asArray()
+    {
+        $fields = $this->getMapper()->getDescriptor()->getFields();
+        $data = [];
+        /** @var FieldDescriptor $field */
+        foreach ($fields as $field) {
+            $data[$field->getName()] = $this->{$field->getName()};
+        }
+        return $data;
     }
 
     /**

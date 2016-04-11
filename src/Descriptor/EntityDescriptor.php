@@ -56,6 +56,11 @@ class EntityDescriptor implements EntityDescriptorInterface
     protected $primaryKey;
 
     /**
+     * @var FieldDescriptor
+     */
+    protected $displayField;
+
+    /**
      * @var string
      */
     protected $adapterAlias = '__undefined__';
@@ -188,6 +193,10 @@ class EntityDescriptor implements EntityDescriptorInterface
             $annotation = $annotations->getAnnotation('column');
             $descriptor = new FieldDescriptor($annotation->getParameters());
             $this->fields[] = $descriptor->setName($property);
+            
+            if ($annotations->hasAnnotation('@display')) {
+                $descriptor->display = true;
+            }
         }
         return $this;
     }
@@ -279,5 +288,25 @@ class EntityDescriptor implements EntityDescriptorInterface
                 break;
             }
         }
+    }
+
+    /**
+     * Gets the field that user to display all object
+     *
+     * @return string
+     */
+    public function getDisplayFiled()
+    {
+        if (null == $this->displayField) {
+            $fields = $this->getFields();
+            $this->displayField = $fields[0];
+            foreach ($fields as $field) {
+                if ($field->isDisplay()) {
+                    $this->displayField = $field;
+                    break;
+                }
+            }
+        }
+        return $this->displayField;
     }
 }
