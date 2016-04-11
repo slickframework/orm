@@ -299,7 +299,8 @@ class EntityDescriptor implements EntityDescriptorInterface
     {
         if (null == $this->displayField) {
             $fields = $this->getFields();
-            $this->displayField = reset($fields->asArray());
+            $data = $fields->asArray();
+            $this->displayField = reset($data);
             foreach ($fields as $field) {
                 if ($field->isDisplay()) {
                     $this->displayField = $field;
