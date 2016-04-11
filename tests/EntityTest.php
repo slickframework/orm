@@ -53,7 +53,7 @@ class EntityTest extends TestCase
         $mapper = $this->getMockedMapper();
         $mapper->expects($this->once())
             ->method('save')
-            ->with($this->entity, [])
+            ->with($this->entity)
             ->willReturn(1);
         $this->entity->expects($this->once())
             ->method('getMapper')

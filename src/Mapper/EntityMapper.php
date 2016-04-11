@@ -39,12 +39,11 @@ class EntityMapper extends AbstractEntityMapper implements
      * Optionally saves only the partial data if $data argument is passed. If
      * no data is given al the field properties will be updated.
      *
-     * @param array $data Partial data to save
      * @param EntityInterface $entity
      *
      * @return self|$this|EntityMapperInterface
      */
-    public function save(EntityInterface $entity, array $data = [])
+    public function save(EntityInterface $entity)
     {
         $this->entity = $entity;
         $query = $this->getUpdateQuery();

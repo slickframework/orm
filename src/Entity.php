@@ -35,8 +35,11 @@ abstract class Entity extends Base implements EntityInterface
      */
     public function save(array $data = [])
     {
+        foreach ($data as $property => $value) {
+            $this->{$property} = $value;
+        }
         return $this->getMapper()
-            ->save($this, $data);
+            ->save($this);
 
     }
 
