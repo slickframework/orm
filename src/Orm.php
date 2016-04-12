@@ -13,9 +13,9 @@ use League\Event\Emitter;
 use League\Event\EmitterInterface;
 use League\Event\ListenerInterface;
 use Slick\Database\Adapter\AdapterInterface;
-use Slick\Orm\Descriptor\EntityDescriptor;
 use Slick\Orm\Descriptor\EntityDescriptorRegistry;
 use Slick\Orm\Event\EmittersMap;
+use Slick\Orm\Event\OrmListenersProvider;
 use Slick\Orm\Exception\InvalidArgumentException;
 use Slick\Orm\Mapper\EntityMapper;
 use Slick\Orm\Mapper\MappersMap;
@@ -55,6 +55,11 @@ final class Orm
      * @var EmittersMap
      */
     private $emitters;
+
+    /**
+     * @var OrmListenersProvider
+     */
+    private $listenersProvider;
 
     /**
      * Initialize Orm registry with empty lists
@@ -191,6 +196,30 @@ final class Orm
     }
 
     /**
+     * Gets general listeners provider
+     * 
+     * @return OrmListenersProvider
+     */
+    public function getListenersProvider()
+    {
+        if (null == $this->listenersProvider) {
+            $this->listenersProvider = new OrmListenersProvider();
+        }
+        return $this->listenersProvider;
+    }
+
+    /**
+     * Gets general listeners provider
+     *
+     * @return OrmListenersProvider
+     */
+    public static function listenersProvider()
+    {
+        return self::getInstance()->getListenersProvider();
+    }
+    
+
+    /**
      * Gets repository for provided entity class name
      *
      * @param string $entityClass FQ entity class name
@@ -319,6 +348,7 @@ final class Orm
     private function createEmitter($entity)
     {
         $emitter = new Emitter();
+        $emitter->useListenerProvider($this->getListenersProvider());
         $this->emitters->set($entity, $emitter);
         return $emitter;
     }
