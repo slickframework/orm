@@ -340,17 +340,15 @@ final class Orm
             : $this->defaultRepository;
         /** @var RepositoryInterface|EntityRepository $repository */
         $repository = new $repoClass();
-        if ($repository instanceof EntityRepository) {
-            $repository->setAdapter(
-                $this->adapters->get($this->getAdapterAlias($entityClass))
-            )
-                ->setEntityMapper($this->getMapperFor($entityClass))
-                ->setEntityDescriptor(
-                    EntityDescriptorRegistry::getInstance()
-                        ->getDescriptorFor($entityClass)
-                );
-            $this->repositories->set($entityClass, $repository);
-        }
+        $repository->setAdapter(
+            $this->adapters->get($this->getAdapterAlias($entityClass))
+        )
+            ->setEntityMapper($this->getMapperFor($entityClass))
+            ->setEntityDescriptor(
+                EntityDescriptorRegistry::getInstance()
+                    ->getDescriptorFor($entityClass)
+            );
+        $this->repositories->set($entityClass, $repository);
 
         return $repository;
     }
