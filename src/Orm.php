@@ -62,6 +62,16 @@ final class Orm
     private $listenersProvider;
 
     /**
+     * @var string
+     */
+    private $defaultRepository = EntityRepository::class;
+
+    /**
+     * @var array
+     */
+    private static $repositoryClassMap = [];
+
+    /**
      * Initialize Orm registry with empty lists
      */
     private function __construct()
@@ -299,6 +309,24 @@ final class Orm
         return $this;
     }
 
+    public static function registerRepository($className, $repoClassName)
+    {
+        if (!is_subclass_of($className, EntityInterface::class)) {
+            throw new InvalidArgumentException(
+                "The class {$className} is not an implementation of " .
+                "EntityInterface"
+            );
+        }
+
+        if (!is_subclass_of($repoClassName, RepositoryInterface::class)) {
+            throw new InvalidArgumentException(
+                "The class {$repoClassName} is not an implementation of".
+                " EntityInterface"
+            );
+        }
+        self::$repositoryClassMap[$className] = $repoClassName;
+    }
+
     /**
      * Creates a repository for provided entity class name
      *
@@ -307,16 +335,23 @@ final class Orm
      */
     private function createRepository($entityClass)
     {
-        $repository = new EntityRepository();
-        $repository->setAdapter(
-            $this->adapters->get($this->getAdapterAlias($entityClass))
-        )
-            ->setEntityMapper($this->getMapperFor($entityClass))
-            ->setEntityDescriptor(
-                EntityDescriptorRegistry::getInstance()
-                    ->getDescriptorFor($entityClass)
-            );
-        $this->repositories->set($entityClass, $repository);
+        $repoClass = array_key_exists($entityClass, self::$repositoryClassMap)
+            ? self::$repositoryClassMap[$entityClass]
+            : $this->defaultRepository;
+        /** @var RepositoryInterface|EntityRepository $repository */
+        $repository = new $repoClass();
+        if ($repository instanceof EntityRepository) {
+            $repository->setAdapter(
+                $this->adapters->get($this->getAdapterAlias($entityClass))
+            )
+                ->setEntityMapper($this->getMapperFor($entityClass))
+                ->setEntityDescriptor(
+                    EntityDescriptorRegistry::getInstance()
+                        ->getDescriptorFor($entityClass)
+                );
+            $this->repositories->set($entityClass, $repository);
+        }
+
         return $repository;
     }
 

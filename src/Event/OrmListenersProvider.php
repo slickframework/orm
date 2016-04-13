@@ -12,7 +12,6 @@ namespace Slick\Orm\Event;
 use League\Event\ListenerAcceptorInterface;
 use League\Event\ListenerInterface;
 use League\Event\ListenerProviderInterface;
-use Slick\Common\Utils\Collection\AbstractCollection;
 use Slick\Common\Utils\Collection\AbstractMap;
 
 /**
