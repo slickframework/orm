@@ -11,6 +11,7 @@ namespace Slick\Orm;
 
 use Slick\Common\Base;
 use Slick\Common\Exception\WriteOnlyException;
+use Slick\Common\Inspector;
 use Slick\Orm\Descriptor\EntityDescriptorRegistry;
 use Slick\Orm\Descriptor\Field\FieldDescriptor;
 
@@ -69,13 +70,20 @@ abstract class Entity extends Base implements EntityInterface
      */
     public function asArray()
     {
-        $fields = $this->getMapper()->getDescriptor()->getFields();
+        $inspector = Inspector::forClass($this);
+        $properties = $inspector->getClassProperties();
         $data = [];
-        /** @var FieldDescriptor $field */
-        foreach ($fields as $field) {
-            $data[$field->getName()] = $this->{$field->getName()};
+        foreach ($properties as $property) {
+            $annotations = $inspector->getPropertyAnnotations($property);
+            if (
+                $annotations->hasAnnotation('readwrite') ||
+                $annotations->hasAnnotation('read')
+            ) {
+                $data[$property] = $inspector->getReflection()
+                    ->getProperty($property)
+                    ->getValue();
+            }
         }
-        return $data;
     }
 
     /**
