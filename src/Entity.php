@@ -79,11 +79,10 @@ abstract class Entity extends Base implements EntityInterface
                 $annotations->hasAnnotation('readwrite') ||
                 $annotations->hasAnnotation('read')
             ) {
-                $data[$property] = $inspector->getReflection()
-                    ->getProperty($property)
-                    ->getValue();
+                $data[$property] = $this->{$property};
             }
         }
+        return $data;
     }
 
     /**
