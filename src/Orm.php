@@ -12,6 +12,7 @@ namespace Slick\Orm;
 use League\Event\Emitter;
 use League\Event\EmitterInterface;
 use League\Event\ListenerInterface;
+use Slick\Common\Inspector;
 use Slick\Database\Adapter\AdapterInterface;
 use Slick\Orm\Descriptor\EntityDescriptorRegistry;
 use Slick\Orm\Event\EmittersMap;
@@ -337,7 +338,7 @@ final class Orm
     {
         $repoClass = array_key_exists($entityClass, self::$repositoryClassMap)
             ? self::$repositoryClassMap[$entityClass]
-            : $this->defaultRepository;
+            : $this->getCustomRepository($entityClass);
         /** @var RepositoryInterface|EntityRepository $repository */
         $repository = new $repoClass();
         $repository->setAdapter(
@@ -351,6 +352,53 @@ final class Orm
         $this->repositories->set($entityClass, $repository);
 
         return $repository;
+    }
+
+    /**
+     * Check the provided entity class annotations to determine the
+     * repository to instantiate.
+     * 
+     * If no annotation is found the default repository will be used.
+     * 
+     * @param string $entityClass
+     * @return string
+     */
+    private function getCustomRepository($entityClass)
+    {
+        $inspector = Inspector::forClass($entityClass);
+        $annotations = $inspector->getClassAnnotations();
+        $class = $this->defaultRepository;
+        if ($annotations->hasAnnotation('@repository')) {
+            $class = $this->checkRepositoryClass(
+                $annotations->getAnnotation('@repository')
+                    ->getValue()
+            );
+        }
+        return $class;
+    }
+
+    /**
+     * Check class exists and implements the RepositoryInterface interface
+     * 
+     * @param string $repositoryClass
+     * @return string
+     */
+    private function checkRepositoryClass($repositoryClass)
+    {
+        if (!class_exists($repositoryClass)) {
+            throw new InvalidArgumentException(
+                "Class {$repositoryClass} does not exists. Fail to create " .
+                "repository."
+            );
+        }
+        
+        if (!is_subclass_of($repositoryClass, RepositoryInterface::class)) {
+            throw new InvalidArgumentException(
+                "Class {$repositoryClass} does not implements the " .
+                "RepositoryInterface."
+            );
+        }
+        return $repositoryClass;
     }
 
     /**

@@ -18,6 +18,8 @@ use Slick\Orm\EntityInterface;
  *
  * @package Domain
  * @author  Filipe Silva <silvam.filipe@gmail.com>
+ * 
+ * @repository Domain\Repository\PostsRepository
  */
 class Post extends Entity
 {

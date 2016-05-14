@@ -14,8 +14,13 @@ use PHPUnit_Framework_TestCase as TestCase;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use Slick\Database\Adapter\AdapterInterface;
 use Slick\Orm\EntityMapperInterface;
+use Slick\Orm\Exception\InvalidArgumentException;
 use Slick\Orm\Orm;
+use Slick\Tests\Orm\Descriptor\OtherType;
 use Slick\Tests\Orm\Descriptor\Person;
+use Slick\Tests\Orm\Descriptor\Post;
+use Slick\Tests\Orm\Descriptor\Repository\PostsRepository;
+use Slick\Tests\Orm\Descriptor\Type;
 
 /**
  * Orm Test case
@@ -92,6 +97,36 @@ class OrmTest extends TestCase
     public function ormCreatesRepositoriesOnlyForEntities()
     {
         Orm::getRepository(\stdClass::class);
+    }
+
+    /**
+     * Should read the @repository annotation to determine the repository class
+     * @test
+     */
+    public function createCustomRepository()
+    {
+        $repository = Orm::getRepository(Post::class);
+        $this->assertInstanceOf(PostsRepository::class, $repository);
+    }
+
+    /**
+     * The class set in the @repository annotation must exists
+     * @test
+     */
+    public function customRepositoryMustBeAnExistingClass()
+    {
+        $this->setExpectedException(InvalidArgumentException::class);
+        Orm::getRepository(Type::class);
+    }
+
+    /**
+     * The class set in the @repository annotation must implement the RepositoryInterface
+     * @test
+     */
+    public function customRepositoryMustImplementRepositoryInterface()
+    {
+        $this->setExpectedException(InvalidArgumentException::class);
+        Orm::getRepository(OtherType::class);
     }
 
     /**
