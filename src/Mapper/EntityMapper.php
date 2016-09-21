@@ -137,14 +137,35 @@ class EntityMapper extends AbstractEntityMapper implements
     protected function getData(Sql\SqlInterface $query)
     {
         $data = [];
-        $primaryKey = $this->getDescriptor()->getPrimaryKey()->getName();
         $fields = $this->getDescriptor()->getFields();
         /** @var FieldDescriptor $field */
         foreach ($fields as $field) {
             $data[$field->getField()] = $this->entity->{$field->getName()};
         }
-        if ($query instanceof Sql\Insert) {
-            unset($data[$this->entity->{$primaryKey}]);
+
+        return ($query instanceof Sql\Insert)
+            ? $this->checkInsertData($data)
+            : $data;
+    }
+
+    /**
+     * Clears primary key if its auto incremented and unset
+     *
+     * @param array $data
+     *
+     * @return array
+     */
+    protected function checkInsertData($data)
+    {
+        $primaryKey = $this->getDescriptor()->getPrimaryKey();
+        $name = $primaryKey->getName();
+
+        $notNeeded = $primaryKey->isAutoIncrement() &&
+            array_key_exists($name, $data) &&
+            null == trim($data[$name]);
+
+        if ($notNeeded) {
+            unset($data[$name]);
         }
         return $data;
     }
@@ -229,5 +250,7 @@ class EntityMapper extends AbstractEntityMapper implements
         Orm::getRepository($this->getEntityClassName())
             ->getIdentityMap()
             ->remove($entity);
+
+        return $this;
     }
 }
