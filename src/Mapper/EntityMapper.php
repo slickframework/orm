@@ -47,7 +47,7 @@ class EntityMapper extends AbstractEntityMapper implements
     {
         $this->entity = $entity;
         $query = $this->getUpdateQuery();
-        $data = $this->getData();
+        $data = $this->getData($query);
         $save = $this->triggerBeforeSave($query, $entity, $data);
 
         $query->set($save->params)
@@ -130,15 +130,21 @@ class EntityMapper extends AbstractEntityMapper implements
     /**
      * Gets data to be used in queries
      *
+     * @param Sql\SqlInterface|Sql\Insert|Sql\Update $query
+     *
      * @return array
      */
-    protected function getData()
+    protected function getData(Sql\SqlInterface $query)
     {
         $data = [];
+        $primaryKey = $this->getDescriptor()->getPrimaryKey()->getName();
         $fields = $this->getDescriptor()->getFields();
         /** @var FieldDescriptor $field */
         foreach ($fields as $field) {
             $data[$field->getField()] = $this->entity->{$field->getName()};
+        }
+        if ($query instanceof Sql\Insert) {
+            unset($data[$this->entity->{$primaryKey}]);
         }
         return $data;
     }
