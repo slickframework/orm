@@ -118,6 +118,7 @@ abstract class Entity extends Base implements EntityInterface
                 ->getRelationsMap();
             if ($relMap->containsKey($name)) {
                 $value = $relMap->get($name)->load($this);
+                $this->{$name} = $value;
             }
         }
         return $value;
