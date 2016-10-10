@@ -145,7 +145,22 @@ class EntityMapper extends AbstractEntityMapper implements
 
         return ($query instanceof Sql\Insert)
             ? $this->checkInsertData($data)
-            : $data;
+            : $this->checkUpdateData($data);
+    }
+
+    /**
+     * Clears the primary key for all update queries
+     *
+     * @param array $data
+     *
+     * @return mixed
+     */
+    protected function checkUpdateData($data)
+    {
+        $primaryKey = $this->getDescriptor()->getPrimaryKey();
+        $name = $primaryKey->getName();
+        unset($data[$name]);
+        return $data;
     }
 
     /**
