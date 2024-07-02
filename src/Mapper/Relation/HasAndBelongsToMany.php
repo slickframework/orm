@@ -38,6 +38,21 @@ class HasAndBelongsToMany extends HasMany
     protected $relationTable;
 
     /**
+     * HasAndBelongsTo relation
+     *
+     * @param array|object $options The parameters from annotation
+     */
+    public function __construct($options)
+    {
+        $annotation = $options['annotation'];
+        $options['relationTable'] = $annotation->getParameter('relationTable');
+        $options['relatedForeignKey'] =
+            $annotation->getParameter('relatedForeignKey');
+
+        parent::__construct($options);
+    }
+
+    /**
      * Gets the related foreign key
      * 
      * @return string

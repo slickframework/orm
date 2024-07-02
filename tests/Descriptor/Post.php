@@ -18,6 +18,8 @@ use Slick\Orm\EntityInterface;
  * Class Post
  * 
  * @package Slick\Tests\Orm\Descriptor
+ * 
+ * @repository Slick\Tests\Orm\Descriptor\Repository\PostsRepository
  */
 class Post extends Entity
 {

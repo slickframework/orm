@@ -12,10 +12,11 @@ namespace Slick\Orm;
 use League\Event\Emitter;
 use League\Event\EmitterInterface;
 use League\Event\ListenerInterface;
+use Slick\Common\Inspector;
 use Slick\Database\Adapter\AdapterInterface;
-use Slick\Orm\Descriptor\EntityDescriptor;
 use Slick\Orm\Descriptor\EntityDescriptorRegistry;
 use Slick\Orm\Event\EmittersMap;
+use Slick\Orm\Event\OrmListenersProvider;
 use Slick\Orm\Exception\InvalidArgumentException;
 use Slick\Orm\Mapper\EntityMapper;
 use Slick\Orm\Mapper\MappersMap;
@@ -55,6 +56,21 @@ final class Orm
      * @var EmittersMap
      */
     private $emitters;
+
+    /**
+     * @var OrmListenersProvider
+     */
+    private $listenersProvider;
+
+    /**
+     * @var string
+     */
+    private $defaultRepository = EntityRepository::class;
+
+    /**
+     * @var array
+     */
+    private static $repositoryClassMap = [];
 
     /**
      * Initialize Orm registry with empty lists
@@ -191,6 +207,30 @@ final class Orm
     }
 
     /**
+     * Gets general listeners provider
+     * 
+     * @return OrmListenersProvider
+     */
+    public function getListenersProvider()
+    {
+        if (null == $this->listenersProvider) {
+            $this->listenersProvider = new OrmListenersProvider();
+        }
+        return $this->listenersProvider;
+    }
+
+    /**
+     * Gets general listeners provider
+     *
+     * @return OrmListenersProvider
+     */
+    public static function listenersProvider()
+    {
+        return self::getInstance()->getListenersProvider();
+    }
+    
+
+    /**
      * Gets repository for provided entity class name
      *
      * @param string $entityClass FQ entity class name
@@ -270,6 +310,24 @@ final class Orm
         return $this;
     }
 
+    public static function registerRepository($className, $repoClassName)
+    {
+        if (!is_subclass_of($className, EntityInterface::class)) {
+            throw new InvalidArgumentException(
+                "The class {$className} is not an implementation of " .
+                "EntityInterface"
+            );
+        }
+
+        if (!is_subclass_of($repoClassName, RepositoryInterface::class)) {
+            throw new InvalidArgumentException(
+                "The class {$repoClassName} is not an implementation of".
+                " EntityInterface"
+            );
+        }
+        self::$repositoryClassMap[$className] = $repoClassName;
+    }
+
     /**
      * Creates a repository for provided entity class name
      *
@@ -278,7 +336,11 @@ final class Orm
      */
     private function createRepository($entityClass)
     {
-        $repository = new EntityRepository();
+        $repoClass = array_key_exists($entityClass, self::$repositoryClassMap)
+            ? self::$repositoryClassMap[$entityClass]
+            : $this->getCustomRepository($entityClass);
+        /** @var RepositoryInterface|EntityRepository $repository */
+        $repository = new $repoClass();
         $repository->setAdapter(
             $this->adapters->get($this->getAdapterAlias($entityClass))
         )
@@ -288,7 +350,55 @@ final class Orm
                     ->getDescriptorFor($entityClass)
             );
         $this->repositories->set($entityClass, $repository);
+
         return $repository;
+    }
+
+    /**
+     * Check the provided entity class annotations to determine the
+     * repository to instantiate.
+     * 
+     * If no annotation is found the default repository will be used.
+     * 
+     * @param string $entityClass
+     * @return string
+     */
+    private function getCustomRepository($entityClass)
+    {
+        $inspector = Inspector::forClass($entityClass);
+        $annotations = $inspector->getClassAnnotations();
+        $class = $this->defaultRepository;
+        if ($annotations->hasAnnotation('@repository')) {
+            $class = $this->checkRepositoryClass(
+                $annotations->getAnnotation('@repository')
+                    ->getValue()
+            );
+        }
+        return $class;
+    }
+
+    /**
+     * Check class exists and implements the RepositoryInterface interface
+     * 
+     * @param string $repositoryClass
+     * @return string
+     */
+    private function checkRepositoryClass($repositoryClass)
+    {
+        if (!class_exists($repositoryClass)) {
+            throw new InvalidArgumentException(
+                "Class {$repositoryClass} does not exists. Fail to create " .
+                "repository."
+            );
+        }
+        
+        if (!is_subclass_of($repositoryClass, RepositoryInterface::class)) {
+            throw new InvalidArgumentException(
+                "Class {$repositoryClass} does not implements the " .
+                "RepositoryInterface."
+            );
+        }
+        return $repositoryClass;
     }
 
     /**
@@ -319,6 +429,7 @@ final class Orm
     private function createEmitter($entity)
     {
         $emitter = new Emitter();
+        $emitter->useListenerProvider($this->getListenersProvider());
         $this->emitters->set($entity, $emitter);
         return $emitter;
     }

@@ -75,4 +75,23 @@ class EntityRepository extends AbstractRepository implements
             ])
             ->first();
     }
+
+    /**
+     * Gets a list ready for use with select boxes
+     * 
+     * @return array
+     */
+    public function getList()
+    {
+        $data = $this->find()
+            ->limit(250)
+            ->all();
+        $list = [];
+        $pmk = $this->getEntityDescriptor()->getPrimaryKey();
+        $display = $this->getEntityDescriptor()->getDisplayFiled();
+        foreach ($data as $entity) {
+            $list[$entity->{$pmk->getName()}] = $entity->{$display->getName()};
+        }
+        return $list;
+    }
 }

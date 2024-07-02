@@ -11,7 +11,9 @@ namespace Slick\Orm;
 
 use Slick\Common\Base;
 use Slick\Common\Exception\WriteOnlyException;
+use Slick\Common\Inspector;
 use Slick\Orm\Descriptor\EntityDescriptorRegistry;
+use Slick\Orm\Descriptor\Field\FieldDescriptor;
 
 /**
  * Entity
@@ -34,8 +36,12 @@ abstract class Entity extends Base implements EntityInterface
      */
     public function save(array $data = [])
     {
+        foreach ($data as $property => $value) {
+            $method = 'set'.ucfirst($property);
+            call_user_func_array([$this, $method], [$value]);
+        }
         return $this->getMapper()
-            ->save($this, $data);
+            ->save($this);
 
     }
 
@@ -59,6 +65,40 @@ abstract class Entity extends Base implements EntityInterface
     }
 
     /**
+     * Returns the entity fields as a key/value associative array
+     *
+     * @return array
+     */
+    public function asArray()
+    {
+        $inspector = Inspector::forClass($this);
+        $properties = $inspector->getClassProperties();
+        $data = [];
+        foreach ($properties as $property) {
+            $annotations = $inspector->getPropertyAnnotations($property);
+            if (
+                $annotations->hasAnnotation('readwrite') ||
+                $annotations->hasAnnotation('read')
+            ) {
+                $data[$property] = $this->{$property};
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * Returns a string representation for this entity
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        $field = $this->getMapper()->getDescriptor()->getDisplayFiled();
+        $value = $this->{$field->getName()};
+        return (string) $value;
+    }
+
+    /**
      * Retrieves the value of a property with the given name.
      *
      * @param string $name The property name where to get the value from.
@@ -78,6 +118,7 @@ abstract class Entity extends Base implements EntityInterface
                 ->getRelationsMap();
             if ($relMap->containsKey($name)) {
                 $value = $relMap->get($name)->load($this);
+                $this->{$name} = $value;
             }
         }
         return $value;

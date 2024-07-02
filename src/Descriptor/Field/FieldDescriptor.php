@@ -22,10 +22,12 @@ use Slick\Database\Sql\Ddl\Column\Size;
  * @property string $type
  * @property int    $length
  * @property string $size
+ * @property bool   $display
  *
  * @method bool isPrimaryKey()
  * @method bool isIndex()
  * @method bool isAutoIncrement()
+ * @method bool isDisplay()
  */
 class FieldDescriptor extends Base
 {
@@ -82,6 +84,12 @@ class FieldDescriptor extends Base
      * @var string
      */
     protected $raw;
+
+    /**
+     * @readwrite
+     * @var bool
+     */
+    protected $display = false;
 
     /**
      * Gets field name

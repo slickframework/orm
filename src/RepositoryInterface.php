@@ -43,6 +43,12 @@ interface RepositoryInterface extends AdapterAwareInterface
     public function find();
 
     /**
+     * Gets a list ready for use with select boxes
+     * @return array
+     */
+    public function getList();
+
+    /**
      * Set the entity descriptor interface
      *
      * @param EntityDescriptorInterface $descriptor

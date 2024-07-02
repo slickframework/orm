@@ -39,16 +39,15 @@ class EntityMapper extends AbstractEntityMapper implements
      * Optionally saves only the partial data if $data argument is passed. If
      * no data is given al the field properties will be updated.
      *
-     * @param array $data Partial data to save
      * @param EntityInterface $entity
      *
      * @return self|$this|EntityMapperInterface
      */
-    public function save(EntityInterface $entity, array $data = [])
+    public function save(EntityInterface $entity)
     {
         $this->entity = $entity;
         $query = $this->getUpdateQuery();
-        $data = $this->getData();
+        $data = $this->getData($query);
         $save = $this->triggerBeforeSave($query, $entity, $data);
 
         $query->set($save->params)
@@ -131,15 +130,57 @@ class EntityMapper extends AbstractEntityMapper implements
     /**
      * Gets data to be used in queries
      *
+     * @param Sql\SqlInterface|Sql\Insert|Sql\Update $query
+     *
      * @return array
      */
-    protected function getData()
+    protected function getData(Sql\SqlInterface $query)
     {
         $data = [];
         $fields = $this->getDescriptor()->getFields();
         /** @var FieldDescriptor $field */
         foreach ($fields as $field) {
             $data[$field->getField()] = $this->entity->{$field->getName()};
+        }
+
+        return ($query instanceof Sql\Insert)
+            ? $this->checkInsertData($data)
+            : $this->checkUpdateData($data);
+    }
+
+    /**
+     * Clears the primary key for all update queries
+     *
+     * @param array $data
+     *
+     * @return mixed
+     */
+    protected function checkUpdateData($data)
+    {
+        $primaryKey = $this->getDescriptor()->getPrimaryKey();
+        $name = $primaryKey->getName();
+        unset($data[$name]);
+        return $data;
+    }
+
+    /**
+     * Clears primary key if its auto incremented and unset
+     *
+     * @param array $data
+     *
+     * @return array
+     */
+    protected function checkInsertData($data)
+    {
+        $primaryKey = $this->getDescriptor()->getPrimaryKey();
+        $name = $primaryKey->getName();
+
+        $notNeeded = $primaryKey->isAutoIncrement() &&
+            array_key_exists($name, $data) &&
+            null == trim($data[$name]);
+
+        if ($notNeeded) {
+            unset($data[$name]);
         }
         return $data;
     }
@@ -224,5 +265,7 @@ class EntityMapper extends AbstractEntityMapper implements
         Orm::getRepository($this->getEntityClassName())
             ->getIdentityMap()
             ->remove($entity);
+
+        return $this;
     }
 }

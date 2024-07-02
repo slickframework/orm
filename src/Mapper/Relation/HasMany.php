@@ -49,7 +49,7 @@ class HasMany extends AbstractRelation implements RelationInterface
     protected $conditions;
 
     /**
-     * BelongsTo relation
+     * HasMany relation
      *
      * @param array|object $options The parameters from annotation
      */

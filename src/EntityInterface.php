@@ -54,4 +54,18 @@ interface EntityInterface
      * @return self|$this|EntityInterface
      */
     public function delete();
+
+    /**
+     * Returns the entity fields as a key/value associative array
+     * 
+     * @return array
+     */
+    public function asArray();
+
+    /**
+     * Returns a string representation for this entity
+     * 
+     * @return string
+     */
+    public function __toString();
 }

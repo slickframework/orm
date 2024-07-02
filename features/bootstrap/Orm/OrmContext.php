@@ -403,4 +403,13 @@ class OrmContext extends \AbstractContext implements
         }
         Assert::assertFalse($found);
     }
+
+    /**
+     * @Then /^repository is instance of "([^"]*)"$/
+     * @param string $className
+     */
+    public function repositoryIsInstanceOf($className)
+    {
+        Assert::assertInstanceOf($className, $this->repository);
+    }
 }

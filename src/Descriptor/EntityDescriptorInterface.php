@@ -54,4 +54,11 @@ interface EntityDescriptorInterface
      * @return string
      */
     public function className();
+
+    /**
+     * Gets the field that user to display all object
+     * 
+     * @return FieldDescriptor
+     */
+    public function getDisplayFiled();
 }
