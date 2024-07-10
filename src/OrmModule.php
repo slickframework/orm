@@ -23,7 +23,7 @@ use Slick\ModuleApi\Infrastructure\FrontController\WebModuleInterface;
 use Slick\Orm\Infrastructure\Http\EntityManagerFlushMiddleware;
 use Slick\WebStack\Infrastructure\ComposerParser;
 use Symfony\Component\Console\Application;
-use function Slick\WebStack\importSettingsFile;
+use function Slick\ModuleApi\importSettingsFile;
 
 /**
  * OrmModule
