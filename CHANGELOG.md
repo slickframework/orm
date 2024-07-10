@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [v2.0.0] - 2024-07-10
 ### Added
 - Doctrine DBAL driver middleware to log database operations with duration 
 - `EntityCollection`, `EntityManagerFactory` to manages ORM and DBAL access to databases
@@ -26,5 +27,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Completely remake for Slick v1.2.0.
 - First released stand alone ORM package for Slick framework.
 
-[Unreleased]: https://github.com/slickframework/orm/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/slickframework/orm/compare/v2.0.0...HEAD
+[v2.0.0]: https://github.com/slickframework/orm/compare/v1.2.0...v2.0.0
 [v1.2.0]: https://github.com/slickframework/orm/compare/724593...v1.2.0
