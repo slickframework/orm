@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ### Added
+- Doctrine DBAL driver middleware to log database operations with duration 
+- `EntityCollection`, `EntityManagerFactory` to manages ORM and DBAL access to databases
+- `doctrine/orm` and `doctrine/migrations` console commands
+- `doctrine/orm` and `doctrine/migrations` integration module on `slick/webstack`
 - Code quality tools: `phpstan` `phpmd`
 
 ### Changed
@@ -15,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Removed
 - PHP <= 8.1 support
-- All API from slick v1.2
+- All API from slick <= v1.2
 
 ## [v1.2.0] - 2016-03-31
 ### Added

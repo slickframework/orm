@@ -35,7 +35,6 @@
     "slick/module-api": "^0.2"
   },
   "require-dev": {
-    "behat/behat": "^3.0@dev",
     "monolog/monolog": "^3.0@dev",
     "phpmd/phpmd": "dev-master",
     "phpspec/prophecy": "^1.0@dev",

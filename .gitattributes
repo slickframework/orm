@@ -8,3 +8,10 @@
 /.scrutinizer.yml   export-ignore
 /tests              export-ignore
 /features           export-ignore
+/docker-compose.yml export-ignore
+/phpunit.xml        export-ignore
+/phpstan.neon.dist  export-ignore
+/CONTRIBUTING.md    export-ignore
+/docker             export-ignore
+/build              export-ignore
+/.github            export-ignore
