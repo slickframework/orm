@@ -24,19 +24,27 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Tests\\Slick\\Orm\\": "tests"
+      "Tests\\Slick\\Orm\\": "tests",
+      "Features\\App\\": "features/app/src"
     }
   },
   "require": {
-    "php": ">=8.2"
+    "php": ">=8.2",
+    "doctrine/migrations": "*",
+    "doctrine/orm": "*",
+    "slick/module-api": "^0.2"
   },
   "require-dev": {
+    "behat/behat": "^3.0@dev",
+    "monolog/monolog": "^3.0@dev",
     "phpmd/phpmd": "dev-master",
     "phpspec/prophecy": "^1.0@dev",
     "phpspec/prophecy-phpunit": "^2.0@dev",
     "phpstan/phpstan": "2.0.x-dev",
     "phpunit/phpunit": "^11.3@dev",
-    "squizlabs/php_codesniffer": "4.0.x-dev"
+    "slick/webstack": "2.x-dev",
+    "squizlabs/php_codesniffer": "4.0.x-dev",
+    "symfony/cache": "7.2.x-dev"
   },
   "extra": {
     "branch-alias": {

@@ -1,0 +1,10 @@
+{
+  "version": "v2.0.0",
+  "name": "slick/web-application",
+  "description": "This demo web application serves as a testing platform for the Slick/WebStack framework.",
+  "autoload": {
+    "psr-4": {
+      "Features\\App\\": "src"
+    }
+  }
+}
