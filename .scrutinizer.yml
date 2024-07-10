@@ -12,4 +12,4 @@ build:
         analysis:
             tests:
                 override:
-                    - php-scrutinizer-ru
+                    - php-scrutinizer-run
