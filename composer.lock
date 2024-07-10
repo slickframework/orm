@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "50e1bbb9d4070ed5c596696ad7ab9d8c",
+    "content-hash": "907cfa165b3d60b8bbdbed7a41d49edb",
     "packages": [
         {
             "name": "doctrine/collections",
@@ -687,12 +687,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/orm.git",
-                "reference": "efe62e3f0bd3316b0dc2db81fcc7b3edf76da238"
+                "reference": "4c2f104d420d8c4e942baa93b78f3eafdb2dc22f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/orm/zipball/efe62e3f0bd3316b0dc2db81fcc7b3edf76da238",
-                "reference": "efe62e3f0bd3316b0dc2db81fcc7b3edf76da238",
+                "url": "https://api.github.com/repos/doctrine/orm/zipball/4c2f104d420d8c4e942baa93b78f3eafdb2dc22f",
+                "reference": "4c2f104d420d8c4e942baa93b78f3eafdb2dc22f",
                 "shasum": ""
             },
             "require": {
@@ -767,7 +767,7 @@
                 "issues": "https://github.com/doctrine/orm/issues",
                 "source": "https://github.com/doctrine/orm/tree/3.3.x"
             },
-            "time": "2024-06-27T15:57:03+00:00"
+            "time": "2024-07-10T07:00:45+00:00"
         },
         {
             "name": "doctrine/persistence",
@@ -1459,16 +1459,16 @@
         },
         {
             "name": "slick/module-api",
-            "version": "v0.2.0",
+            "version": "v0.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slickframework/module-api.git",
-                "reference": "b662b500451628f0ca984c2467d9e8f678bd4239"
+                "reference": "cb996d5209ff64587fe6df9bfa50f1d0f0feb63f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slickframework/module-api/zipball/b662b500451628f0ca984c2467d9e8f678bd4239",
-                "reference": "b662b500451628f0ca984c2467d9e8f678bd4239",
+                "url": "https://api.github.com/repos/slickframework/module-api/zipball/cb996d5209ff64587fe6df9bfa50f1d0f0feb63f",
+                "reference": "cb996d5209ff64587fe6df9bfa50f1d0f0feb63f",
                 "shasum": ""
             },
             "require": {
@@ -1485,6 +1485,9 @@
             },
             "type": "library",
             "autoload": {
+                "files": [
+                    "src/functions.php"
+                ],
                 "psr-4": {
                     "Slick\\ModuleApi\\": "src/"
                 }
@@ -1502,9 +1505,9 @@
             "description": "Interfaces required to develop a Slick module",
             "support": {
                 "issues": "https://github.com/slickframework/module-api/issues",
-                "source": "https://github.com/slickframework/module-api/tree/v0.2.0"
+                "source": "https://github.com/slickframework/module-api/tree/v0.3.1"
             },
-            "time": "2024-07-04T15:01:39+00:00"
+            "time": "2024-07-10T23:46:56+00:00"
         },
         {
             "name": "symfony/console",
@@ -2222,12 +2225,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/string.git",
-                "reference": "10e1cbfff6d8f2c14f8f6236d5a1d9bca48797e8"
+                "reference": "04f7ef038c1b0a191c124e83928323264c8af401"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/string/zipball/10e1cbfff6d8f2c14f8f6236d5a1d9bca48797e8",
-                "reference": "10e1cbfff6d8f2c14f8f6236d5a1d9bca48797e8",
+                "url": "https://api.github.com/repos/symfony/string/zipball/04f7ef038c1b0a191c124e83928323264c8af401",
+                "reference": "04f7ef038c1b0a191c124e83928323264c8af401",
                 "shasum": ""
             },
             "require": {
@@ -2301,7 +2304,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-07-06T07:57:47+00:00"
+            "time": "2024-07-09T20:36:12+00:00"
         },
         {
             "name": "symfony/var-exporter",
@@ -2309,12 +2312,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-exporter.git",
-                "reference": "2c89422c029610fd8632a01027e261fb7c587372"
+                "reference": "3f31aa0fe09e1a3e938118cf60a8deabfdafe6ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/2c89422c029610fd8632a01027e261fb7c587372",
-                "reference": "2c89422c029610fd8632a01027e261fb7c587372",
+                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/3f31aa0fe09e1a3e938118cf60a8deabfdafe6ae",
+                "reference": "3f31aa0fe09e1a3e938118cf60a8deabfdafe6ae",
                 "shasum": ""
             },
             "require": {
@@ -2377,7 +2380,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-06-28T08:01:00+00:00"
+            "time": "2024-07-06T07:57:47+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -5057,12 +5060,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/slickframework/web-stack.git",
-                "reference": "75928ca4c2810ab5c7f552e39e1e75857c7d7423"
+                "reference": "d906fa91d1f3598009874577a79662ddf0e37819"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slickframework/web-stack/zipball/75928ca4c2810ab5c7f552e39e1e75857c7d7423",
-                "reference": "75928ca4c2810ab5c7f552e39e1e75857c7d7423",
+                "url": "https://api.github.com/repos/slickframework/web-stack/zipball/d906fa91d1f3598009874577a79662ddf0e37819",
+                "reference": "d906fa91d1f3598009874577a79662ddf0e37819",
                 "shasum": ""
             },
             "require": {
@@ -5075,7 +5078,7 @@
                 "slick/di": "^2.0@dev",
                 "slick/fswatch": "^0.1.0@dev",
                 "slick/http": ">=3.0",
-                "slick/module-api": "^0.2",
+                "slick/module-api": "^0.3",
                 "symfony/console": "7.2.x-dev",
                 "symfony/routing": "7.2.x-dev",
                 "vlucas/phpdotenv": "^5.6@dev"
@@ -5100,9 +5103,6 @@
                 }
             },
             "autoload": {
-                "files": [
-                    "src/functions.php"
-                ],
                 "psr-4": {
                     "Slick\\WebStack\\": "src/"
                 }
@@ -5129,7 +5129,7 @@
                 "issues": "https://github.com/slickframework/web-stack/issues",
                 "source": "https://github.com/slickframework/web-stack/tree/V2"
             },
-            "time": "2024-07-09T23:58:11+00:00"
+            "time": "2024-07-10T23:48:26+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",
@@ -5612,12 +5612,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/routing.git",
-                "reference": "06223ddd26ac39621c084f3e23b3fb03bde66c3a"
+                "reference": "58edfde5f8a95f4662480ea4713412c0ac26d0f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/routing/zipball/06223ddd26ac39621c084f3e23b3fb03bde66c3a",
-                "reference": "06223ddd26ac39621c084f3e23b3fb03bde66c3a",
+                "url": "https://api.github.com/repos/symfony/routing/zipball/58edfde5f8a95f4662480ea4713412c0ac26d0f8",
+                "reference": "58edfde5f8a95f4662480ea4713412c0ac26d0f8",
                 "shasum": ""
             },
             "require": {
@@ -5685,7 +5685,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-07-04T11:21:18+00:00"
+            "time": "2024-07-06T07:57:47+00:00"
         },
         {
             "name": "theseer/tokenizer",
