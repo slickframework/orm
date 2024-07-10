@@ -27,7 +27,7 @@ Remember that this is a bundle from the Slick framework library.
 ## Running Tests
 
 ``` bash
-$ vendor/bin/phpunit
+$ composer test
 ```
 
 

@@ -1,0 +1,29 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * This file is part of web-stack
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Features\App\Console;
+
+/** @var ClassLoader $classLoader */
+$classLoader = require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
+
+use Composer\Autoload\ClassLoader;
+use Slick\WebStack\Infrastructure\Console\ConsoleApplication;
+use Throwable;
+
+try {
+    $consoleApplication = new ConsoleApplication(dirname(__DIR__), $classLoader);
+    $consoleApplication->run();
+} catch (Throwable $throwable) {
+    echo "\n-- ERROR --\n";
+    echo $throwable->getMessage();
+    echo "\n";
+    echo $throwable->getFile() . ':' . $throwable->getLine();
+    echo "\n";
+}
