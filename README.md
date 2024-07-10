@@ -22,7 +22,7 @@ $ composer require slick/orm
 ```
 
 ## Usage
-Please read `slick/orm` documentation at []https://www.slick-framework.com/modules/orm) 
+Please read `slick/orm` documentation at [https://www.slick-framework.com/modules/orm](https://www.slick-framework.com/modules/orm)
 
 ## Testing
 
