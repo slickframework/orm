@@ -1,0 +1,35 @@
+services:
+
+  php:
+    image: fsilva/php:8.2-cli
+    volumes:
+      - ./:/var/www/app
+    environment:
+      - USE_XDEBUG=yes
+      - XDEBUG_MODE=develop,debug,coverage
+      - ENABLE_OPCACHE=no
+      - ENABLE_XDEBUG_FOR_MAC=no
+
+  php-server:
+    build: docker/php-server
+    volumes:
+      - ./:/var/www/app
+    ports:
+      - 8880:80
+    environment:
+      - USE_XDEBUG=yes
+      - XDEBUG_MODE=develop,debug,coverage
+      - ENABLE_OPCACHE=no
+      - ENABLE_XDEBUG_FOR_MAC=yes
+      - WEBROOT=features/app/public
+
+  mysql:
+    image: mysql
+    ports:
+      - 3306:3306
+      - 33060:33060
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: app_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: secret

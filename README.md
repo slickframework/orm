@@ -2,16 +2,13 @@
 
 [![Latest Version](https://img.shields.io/github/release/slickframework/orm.svg?style=flat-square)](https://github.com/slickframework/orm/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![Build Status](https://img.shields.io/travis/slickframework/orm/master.svg?style=flat-square)](https://travis-ci.org/slickframework/orm)
-[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/slickframework/orm/master.svg?style=flat-square)](https://scrutinizer-ci.com/g/slickframework/orm/code-structure?branch=master)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/slickframework/orm/continuous-integration.yml?style=flat-square)](https://github.com/slickframework/orm/actions/workflows/continuous-integration.yml)
 [![Quality Score](https://img.shields.io/scrutinizer/g/slickframework/orm/master.svg?style=flat-square)](https://scrutinizer-ci.com/g/slickframework/orm?branch=master)
 [![Total Downloads](https://img.shields.io/packagist/dt/slick/orm.svg?style=flat-square)](https://packagist.org/packages/slick/orm)
 
 
-`Slick\Orm` is a simple, lightweight, ORM (object-relational mapping) library that
-can help you with the task of mapping you domain entities with your database.
-It uses simple annotations on entity classes to determine how data is mapped
-when you select and/or update it. It also supports relations between entities.
+`Slick\Orm` This module offers Migrations, Database Abstraction (DBA), and Object-Relational Mapping (ORM)
+features utilizing the doctrine/migrations and doctrine/orm packages.
 
 This package is compliant with PSR-2 code standards and PSR-4 autoload standards.
 It also applies the semantic version 2.0.0 specification.
@@ -25,65 +22,7 @@ $ composer require slick/orm
 ```
 
 ## Usage
-
-### Create an entity;
-
-Entities are classes that most of the time had only properties and annotations
-and you need to define them before you can actually use them.
-
-So lets create a simple `Post` entity:
-
-```php
-
-namespace Domain;
-
-use Slick\Orm\Annotations as Orm;
-use Slick\Orm\Entity;
-use Slick\Orm\EntityInterface;
-
-class Post extends Entity
-{
-    /**
-     * @readwrite
-     * @Orm\Column type=integer, primaryKey, autoIncrement
-     * @var integer
-     */
-    protected $id;
-
-    /**
-     * @readwrite
-     * @Orm\Column type=text
-     * @var string
-     */
-    protected $title;
-
-    /**
-     * @readwrite
-     * @Orm\Column type=text
-     * @var string
-     */
-    protected $body;
-    
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setId($entityId)
-    {
-        $this->id = $entityId;
-        return $this;
-    }
-}
-```
-
-Now with our entity defined lets crate a post:
-```php
-use Domain\Post;
-
-$post = new Post(['title' => 'My blog post title', 'body' => 'This is really long...']);
-$post->save();  // Persists data in database
-```
+Please read `slick/orm` documentation at [https://www.slick-framework.com/modules/orm](https://www.slick-framework.com/modules/orm)
 
 ## Testing
 
@@ -102,7 +41,7 @@ If you discover any security related issues, please email silvam.filipe@gmail.co
 ## Credits
 
 - [Slick framework](https://github.com/slickframework)
-- [All Contributors](https://github.com/slickframework/common/graphs/contributors)
+- [All Contributors](https://github.com/slickframework/orm/graphs/contributors)
 
 ## License
 

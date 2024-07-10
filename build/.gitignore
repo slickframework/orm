@@ -1,1 +1,3 @@
 *
+!phpmd.xml
+!phpstan-bootstrap.php
