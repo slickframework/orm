@@ -13,6 +13,7 @@ namespace Slick\Orm;
 
 use Dotenv\Dotenv;
 use JsonException;
+use Slick\Di\ContainerInterface;
 use Slick\ModuleApi\Infrastructure\AbstractModule;
 use Slick\ModuleApi\Infrastructure\Console\ConsoleModuleInterface;
 use Slick\ModuleApi\Infrastructure\FrontController\MiddlewareHandler;
@@ -140,7 +141,7 @@ final class OrmModule extends AbstractModule implements ConsoleModuleInterface, 
      * @inheritdoc
      * @SuppressWarnings(PHPMD.StaticAccess)
      */
-    public function configureConsole(Application $cli): void
+    public function configureConsole(Application $cli, ContainerInterface $container): void
     {
         $configure = require dirname(__DIR__) . '/config/console.php';
         $configure($cli, self::$migrationCnfFile);

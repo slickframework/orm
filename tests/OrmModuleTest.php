@@ -18,6 +18,7 @@ use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Server\MiddlewareInterface;
 use Slick\Di\Container;
+use Slick\Di\ContainerInterface;
 use Slick\Orm\Infrastructure\Persistence\EntityManagerCollection;
 use Slick\Orm\Infrastructure\Persistence\EntityManagerFactory;
 use Slick\Orm\OrmModule;
@@ -56,11 +57,12 @@ class OrmModuleTest extends TestCase
     #[Test]
     public function itConfiguresConsoleApp(): void
     {
+        $container = $this->prophesize(ContainerInterface::class)->reveal();
         $entityManager = $this->prophesize(EntityManagerInterface::class)->reveal();
         DependencyContainerFactory::instance()->container()->register(EntityManagerInterface::class, $entityManager);
         $cli = new Application();
         $module = new OrmModule();
-        $module->configureConsole($cli);
+        $module->configureConsole($cli, $container);
         $this->assertTrue($cli->has('orm:info'));
     }
 
