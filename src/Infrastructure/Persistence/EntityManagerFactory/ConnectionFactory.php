@@ -19,7 +19,6 @@ use Psr\Container\NotFoundExceptionInterface;
 use Slick\Di\ContainerInterface;
 use Slick\Orm\Infrastructure\Logging\DbalMiddleware;
 use Slick\Orm\Infrastructure\Persistence\ManagerSettings;
-use Slick\WebStack\Infrastructure\DependencyContainerFactory;
 
 /**
  * ConnectionFactory

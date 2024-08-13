@@ -22,6 +22,7 @@ use Slick\ModuleApi\Infrastructure\FrontController\MiddlewarePosition;
 use Slick\ModuleApi\Infrastructure\FrontController\Position;
 use Slick\ModuleApi\Infrastructure\FrontController\WebModuleInterface;
 use Slick\Orm\Infrastructure\Http\EntityManagerFlushMiddleware;
+use Slick\Orm\OrmModule\ModuleEventHandling;
 use Slick\WebStack\Infrastructure\ComposerParser;
 use Symfony\Component\Console\Application;
 use function Slick\ModuleApi\importSettingsFile;
@@ -34,29 +35,11 @@ use function Slick\ModuleApi\importSettingsFile;
  */
 final class OrmModule extends AbstractModule implements ConsoleModuleInterface, WebModuleInterface
 {
+    use ModuleEventHandling;
 
-    /** @var array<string, mixed>  */
-    private static array $defaultSettings = [
-        'table_storage' => [
-            'table_name' => 'doctrine_migration_versions',
-            'version_column_name' => 'version',
-            'version_column_length' => 192,
-            'executed_at_column_name' => 'executed_at',
-            'execution_time_column_name' => 'execution_time',
-        ],
-
-        'migrations_paths' => null,
-
-        'all_or_nothing' => true,
-        'transactional' => true,
-        'check_database_platform' => true,
-        'organize_migrations' => 'none',
-        'connection' => null,
-        'em' => null,
-    ];
-
-    private static string $appConfig = APP_ROOT . '/config';
-    private static string $migrationCnfFile = APP_ROOT . '/config/migrations.json';
+    public static string $appConfig = APP_ROOT . '/config';
+    public static string $migrationCnfFile = APP_ROOT . '/config/migrations.json';
+    public static string $ormCnfFile = APP_ROOT . '/config/modules/orm.php';
 
     private ComposerParser $composerParser;
 
@@ -70,50 +53,7 @@ final class OrmModule extends AbstractModule implements ConsoleModuleInterface, 
 
     public function description(): ?string
     {
-        return "This module offers Migrations, Database Abstraction (DBA), and Object-Relational Mapping (ORM) ".
-            "features utilizing the doctrine/migrations and doctrine/orm packages.";
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function onEnable(array $context = []): void
-    {
-        if (is_file(self::$migrationCnfFile)) {
-            return;
-        }
-
-        $settings = self::$defaultSettings;
-        $namespace = '';
-        $namespaces = $this->composerParser->psr4Namespaces();
-        if (!empty($namespaces)) {
-            $namespace = reset($namespaces);
-        }
-
-        $settings['migrations_paths'] = (object) ["{$namespace}Migrations" => '../lib/Migrations'];
-        if (!is_dir(self::$appConfig)) {
-            mkdir(self::$appConfig, 0755, true);
-        }
-
-        if (!is_dir(APP_ROOT . '/lib/Migrations')) {
-            mkdir(APP_ROOT . '/lib/Migrations', 0755, true);
-        }
-
-        file_put_contents(self::$migrationCnfFile, json_encode($settings, JSON_PRETTY_PRINT));
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function onDisable(array $context = []): void
-    {
-        if (!$context['purge']) {
-            return;
-        }
-
-        if (is_file(self::$migrationCnfFile)) {
-            unlink(self::$migrationCnfFile);
-        }
+        return "This module offers Migrations, Database Abstraction (DBA), and Object-Relational Mapping (ORM)";
     }
 
     /**
