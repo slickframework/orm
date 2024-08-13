@@ -33,7 +33,7 @@ class User implements PasswordAuthenticatedUserInterface, PasswordUpgradableInte
     public function __construct(
         #[ORM\Column(type: 'string')]
         private string $name,
-        #[ORM\Column(type: 'Email', unique: true)]
+        #[ORM\Column(type: 'Email', unique: true, nullable: false)]
         private Email $email,
         #[ORM\Column(type: 'string')]
         private string $password = ''
