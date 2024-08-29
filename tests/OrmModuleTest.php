@@ -16,13 +16,12 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
-use Psr\Http\Server\MiddlewareInterface;
+use Slick\Configuration\ConfigurationInterface;
 use Slick\Di\Container;
 use Slick\Di\ContainerInterface;
 use Slick\Orm\Infrastructure\Persistence\EntityManagerCollection;
 use Slick\Orm\Infrastructure\Persistence\EntityManagerFactory;
 use Slick\Orm\OrmModule;
-use Slick\WebStack\Infrastructure\ApplicationSettingsInterface;
 use Slick\WebStack\Infrastructure\DependencyContainerFactory;
 use Symfony\Component\Console\Application;
 
@@ -69,11 +68,11 @@ class OrmModuleTest extends TestCase
     #[Test]
     public function createEntityManagers(): void
     {
-        $settings = $this->prophesize(ApplicationSettingsInterface::class);
+        $settings = $this->prophesize(ConfigurationInterface::class);
         $settings->get('databases', [])->willReturn(['default' => []]);
         $settings->get('types', [])->willReturn(['Email' => DoctrineEmail::class]);
         $container = $this->prophesize(Container::class);
-        $container->get(ApplicationSettingsInterface::class)->willReturn($settings->reveal());
+        $container->get(ConfigurationInterface::class)->willReturn($settings->reveal());
         $container->get(EntityManagerFactory::class)->willReturn(new EntityManagerFactory($container->reveal()));
         $container->register(
             "default.entity.manager",
