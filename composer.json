@@ -3,7 +3,7 @@
   "description": "Slick ORM is a module that provides ORM support to a Slick application using doctrine/orm.",
   "minimum-stability": "dev",
   "license": "MIT",
-  "version": "v2.1.0",
+  "version": "v2.2.0",
   "keywords": [
     "slick",
     "ORM",
@@ -47,7 +47,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "2.1-dev",
+      "dev-master": "2.2-dev",
       "dev-develop": "2.x-dev"
     }
   },
