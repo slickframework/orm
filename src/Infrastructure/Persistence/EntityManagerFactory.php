@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Slick\Orm\Infrastructure\Persistence;
 
+use Doctrine\DBAL\Schema\Sequence;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -53,8 +54,20 @@ final readonly class EntityManagerFactory
     {
         $connectionFactory = new ConnectionFactory($managerSettings, $this->container);
         // SQLLogger
+        $connection = $connectionFactory->createConnection();
+        if ($managerSettings->filterSchemaAssetsExpression()) {
+            $connection->getConfiguration()->setSchemaAssetsFilter(
+                function ($asset) use ($managerSettings) {
+                    // Extract the name if it's a Sequence object
+                    $assetName = $asset instanceof Sequence ? $asset->getName() : $asset;
+
+                    // Apply the regex filter
+                    return !preg_match($managerSettings->filterSchemaAssetsExpression(), $assetName);
+                }
+            );
+        }
         return new EntityManager(
-            $connectionFactory->createConnection(),
+            $connection,
             $this->configuration($managerSettings, $appRoot)
         );
     }
@@ -80,11 +93,6 @@ final readonly class EntityManagerFactory
             // @phpstan-ignore argument.type
             $config->setAutoGenerateProxyClasses($managerSettings->proxyGenerationMode());
         }
-
-        if ($managerSettings->filterSchemaAssetsExpression()) {
-            $config->setSchemaAssetsFilter(fn($asset) => !preg_match($managerSettings->filterSchemaAssetsExpression(), $asset));
-        }
-
         // cache
         $this->configureCache($managerSettings, $config);
 
