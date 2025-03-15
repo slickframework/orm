@@ -81,6 +81,10 @@ final readonly class EntityManagerFactory
             $config->setAutoGenerateProxyClasses($managerSettings->proxyGenerationMode());
         }
 
+        if ($managerSettings->filterSchemaAssetsExpression()) {
+            $config->setSchemaAssetsFilter(fn($asset) => !preg_match($managerSettings->filterSchemaAssetsExpression(), $asset));
+        }
+
         // cache
         $this->configureCache($managerSettings, $config);
 
