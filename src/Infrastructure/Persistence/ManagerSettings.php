@@ -38,6 +38,7 @@ final class ManagerSettings
         'autoGenerateProxiesMode' => self::AUTOGENERATE_DEV,
         'implDriver' => self::ATTRIBUTE_DRIVER_IMPL,
         'autoGenerateProxyClasses' => true,
+        'filterSchemaAssetsExpression' => null
     ];
 
     /** @var array<string, mixed>  */
@@ -64,6 +65,8 @@ final class ManagerSettings
 
     private bool $generateProxyClasses;
 
+    private ?string $filterSchemaAssetsExpression;
+
     /**
      * Constructor for the class.
      *
@@ -82,6 +85,7 @@ final class ManagerSettings
         $this->setProxyGenerationMode();
 
         $this->implDriver = $this->settings['implDriver'];
+        $this->filterSchemaAssetsExpression = $this->settings['filterSchemaAssetsExpression'];
         $this->generateProxyClasses = (bool) $this->settings['autoGenerateProxyClasses'];
     }
 
@@ -183,6 +187,11 @@ final class ManagerSettings
     public function generateProxyClasses(): bool
     {
         return $this->generateProxyClasses;
+    }
+
+    public function filterSchemaAssetsExpression(): ?string
+    {
+        return $this->filterSchemaAssetsExpression;
     }
 
     /**
